@@ -17,6 +17,9 @@ public class HandleGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        context.RegisterPostInitializationOutput(ctx 
+            => ctx.AddSource("IConstructableHandle.g.cs", SourceResources.IConstructableHandle));
+        
         // Do a simple filter for methods
         IncrementalValuesProvider<GenerationInfo> methodDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(
@@ -41,6 +44,8 @@ public class HandleGenerator : IIncrementalGenerator
 
         AttributeData attribute = context.Attributes[0];
 
+        bool staticVirtual = context.SemanticModel.Compilation.SupportsRuntimeCapability(RuntimeCapability.VirtualStaticsInInterfaces);
+        
         bool needsConstructMethod = false;
         bool hasConstructMethod = false;
         bool generateOwns = true;
@@ -146,6 +151,7 @@ public class HandleGenerator : IIncrementalGenerator
             ClassSymbol = classSyntax,
             GenerateConstruct = needsConstructMethod && !hasConstructMethod,
             BaseHandleType = baseFound,
+            StaticVirtual = staticVirtual,
             GenerateConstructor =
                 !hasConstructor && baseFound == BaseType.Bool &&
                 constructorVisibility != MemberVisibility.DoNotGenerate,
@@ -271,6 +277,8 @@ public class HandleGenerator : IIncrementalGenerator
             public required bool IsSealedOrAbstract { get; init; }
             public required bool GenerateOwns { get; init; }
             public required bool GenerateDoesntOwn { get; init; }
+            
+            public required bool StaticVirtual { get; init; }
         }
     }
 

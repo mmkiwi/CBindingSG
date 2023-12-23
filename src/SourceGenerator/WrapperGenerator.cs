@@ -10,6 +10,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
+using NetEscapades.EnumGenerators;
+
 namespace MMKiwi.CBindingSG.SourceGenerator;
 
 [Generator]
@@ -17,12 +19,19 @@ public class WrapperGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        context.RegisterPostInitializationOutput(ctx
+            =>
+        {
+            ctx.AddSource("IConstructableWrapper.g.cs", SourceResources.IConstructableWrapper);
+            ctx.AddSource("IHasHandle.g.cs", SourceResources.IHasHandle);
+        });
+
         // Do a simple filter for methods
         IncrementalValuesProvider<GenerationInfo> methodDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 Constants.GenWrapperMarkerFullName,
-                predicate: (node, _) => node is ClassDeclarationSyntax, // select methods with attributes
-                transform: GetMethodsToGenerate); // sect the methods with the [CbsgWrapperMethod] attribute
+                predicate: (node, _) => node is ClassDeclarationSyntax,// select methods with attributes
+                transform: GetMethodsToGenerate);// sect the methods with the [CbsgWrapperMethod] attribute
 
         // Combine the selected methods with the `Compilation`
         IncrementalValueProvider<(Compilation, ImmutableArray<GenerationInfo>)> compilationAndMethods
@@ -39,9 +48,14 @@ public class WrapperGenerator : IIncrementalGenerator
         ClassDeclarationSyntax classSyntax = (ClassDeclarationSyntax)context.TargetNode;
         INamedTypeSymbol classSymbol = (INamedTypeSymbol)context.TargetSymbol;
 
+        bool staticVirtual = context.SemanticModel.Compilation.SupportsRuntimeCapability(RuntimeCapability.VirtualStaticsInInterfaces);
+
         if (!classSyntax.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)))
         {
-            return new GenerationInfo.ErrorNotPartial { ClassSyntax = classSyntax };
+            return new GenerationInfo.ErrorNotPartial
+            {
+                ClassSyntax = classSyntax
+            };
         }
 
         AttributeData attribute = context.Attributes.First();
@@ -68,11 +82,11 @@ public class WrapperGenerator : IIncrementalGenerator
         }
 
         string wrapperTypeStr = classSymbol.ToDisplayString();
-        string? handleTypeStr = null;
+        ITypeSymbol? handleType = null;
 
         // Only needed iif the class implements IConstructableWrapper, so start by assuming they aren't needed
         // until that interface is encountered
-        bool hasConstructMethod = true;
+        ConstructType hasConstructMethod = ConstructType.None;
 
         // Only needed iif the class implements IHasHandle, so start by assuming they aren't needed
         // until that interface is encountered
@@ -81,7 +95,7 @@ public class WrapperGenerator : IIncrementalGenerator
         bool hasImplicitHandle = true;
 
         bool neverOwns = false;
-        
+
         bool hasIDisposable = false;
 
         foreach (INamedTypeSymbol baseInterface in classSymbol.Interfaces)
@@ -89,22 +103,11 @@ public class WrapperGenerator : IIncrementalGenerator
             if (baseInterface.IsGenericType &&
                 baseInterface.ConstructedFrom.ToDisplayString().StartsWith($"{Constants.IConstructableWrapperFullName}<"))
             {
-                hasConstructMethod = false;
-                foreach (ISymbol member in baseInterface.GetMembers())
-                {
-                    if (member is IMethodSymbol)
-                    {
-                        ITypeSymbol handleType = baseInterface.TypeArguments[1];
-
-                        handleTypeStr = handleType.ToDisplayString();
-
-                        hasConstructMethod |= classSymbol.FindImplementationForInterfaceMember(member) is not null;
-                    }
-                }
+                handleType = baseInterface.TypeArguments[1];
+                hasConstructMethod = FindConstructMethod(baseInterface, classSymbol, handleType);
             }
 
 
-                
             if (baseInterface.IsGenericType &&
                 baseInterface.ConstructedFrom.ToDisplayString().StartsWith($"{Constants.IHasHandleFullName}<"))
             {
@@ -113,9 +116,8 @@ public class WrapperGenerator : IIncrementalGenerator
                 hasConstructor = false;
                 hasImplicitHandle = false;
 
-                ITypeSymbol handleType = baseInterface.TypeArguments[0];
-                handleTypeStr = handleType.ToDisplayString();
-                
+                handleType = baseInterface.TypeArguments[0];
+
                 neverOwns |= handleType.GetAttributes().Any(att => att.AttributeClass?.ToDisplayString() == Constants.NeverOwnsMarkerFullName);
 
                 foreach (var member in Enumerable.OfType<IPropertySymbol>(baseInterface.GetMembers()))
@@ -149,19 +151,24 @@ public class WrapperGenerator : IIncrementalGenerator
             }
         }
 
-        if (handleTypeStr == null)
+        if (handleType == null)
         {
-            return new GenerationInfo.ErrorDoesNotImplement { ClassSyntax = classSyntax };
+            return new GenerationInfo.ErrorDoesNotImplement
+            {
+                ClassSyntax = classSyntax
+            };
         }
 
         return new GenerationInfo.Ok
         {
             ClassSyntax = classSyntax,
-            NeedsConstructor = !hasConstructor,
-            NeedsConstructMethod = !hasConstructMethod && ctorVisibility != MemberVisibility.DoNotGenerate,
+            NeedsConstructor = !hasConstructor && ctorVisibility != MemberVisibility.DoNotGenerate,
             ConstructorVisibility = ctorVisibility.ToStringFast(),
-            HandleType = handleTypeStr,
+            HandleType = handleType.ToDisplayString(),
             WrapperType = wrapperTypeStr,
+            HasImplicitConstruct = hasConstructMethod.HasFlagFast(ConstructType.Implicit),
+            GenerateExplicitConstruct = !hasConstructMethod.HasFlagFast(ConstructType.Explicit) && staticVirtual,
+            GenerateImplicitConstruct = !hasConstructMethod.HasFlagFast(ConstructType.Implicit) && !staticVirtual,
             NeedsExplicitHandle = !hasExplicitHandle,
             NeedsImplicitHandle = !hasImplicitHandle && handleVisibility != MemberVisibility.DoNotGenerate,
             HandleVisibility = handleVisibility.ToStringFast(),
@@ -188,6 +195,33 @@ public class WrapperGenerator : IIncrementalGenerator
         }
         */
     }
+    private static ConstructType FindConstructMethod(INamedTypeSymbol baseInterface, INamedTypeSymbol classSymbol, ITypeSymbol handleType)
+    {
+        var result = ConstructType.None;
+
+        foreach (var member in baseInterface.GetMembers().OfType<IMethodSymbol>())
+        {
+            if (classSymbol.FindImplementationForInterfaceMember(member) is IMethodSymbol { ExplicitInterfaceImplementations.Length: > 0 })
+            {
+                result |= ConstructType.Explicit;
+                break;
+            }
+        }
+
+        foreach (var method in classSymbol.GetMembers().OfType<IMethodSymbol>())
+        {
+            if (method.Name == "Construct"
+                && method.ReturnType.Equals(classSymbol, SymbolEqualityComparer.Default)
+                && method.Parameters.Length == 1
+                && method.Parameters[0].Type.Equals(handleType, SymbolEqualityComparer.Default))
+            {
+                result |= ConstructType.Implicit;
+                break;
+            }
+        }
+
+        return result;
+    }
 
     static void Execute(Compilation compilation, ImmutableArray<GenerationInfo> classes,
         SourceProductionContext context)
@@ -204,9 +238,9 @@ public class WrapperGenerator : IIncrementalGenerator
             {
                 case GenerationInfo.ErrorNotPartial:
                     context.ReportDiagnostic(Diagnostic.Create(Constants.Diag02IsNotPartial,
-                                                               cls.ClassSyntax.GetLocation(),
-                                                               cls.ClassSyntax.Identifier, 
-                                                               "Class"));
+                        cls.ClassSyntax.GetLocation(),
+                        cls.ClassSyntax.Identifier,
+                        "Class"));
                     break;
                 case GenerationInfo.ErrorDoesNotImplement:
                     context.ReportDiagnostic(Diagnostic.Create(Constants.Diag09NoImplement,
@@ -215,14 +249,18 @@ public class WrapperGenerator : IIncrementalGenerator
                     break;
                 case GenerationInfo.Ok
                 {
-                    NeedsConstructMethod: false,
-                    NeedsExplicitHandle: false, 
-                    NeedsImplicitHandle: false, 
+                    GenerateExplicitConstruct: false,
+                    GenerateImplicitConstruct: false,
+                    NeedsExplicitHandle: false,
+                    NeedsImplicitHandle: false,
                     NeedsConstructor: false,
                 }:
                     continue;
                 case GenerationInfo.Ok genInfo:
                     {
+                        bool virtualStatic = compilation.SupportsRuntimeCapability(RuntimeCapability.VirtualStaticsInInterfaces);
+                        ;
+
                         if (genInfo.MissingIDisposable)
                         {
                             context.ReportDiagnostic(Diagnostic.Create(Constants.Diag08IDisposable,
@@ -231,7 +269,7 @@ public class WrapperGenerator : IIncrementalGenerator
                         }
 
                         // generate the source code and add it to the output
-                        string result = WrapperGenerationHelper.GenerateExtensionClass(genInfo);
+                        string result = WrapperGenerationHelper.GenerateExtensionClass(genInfo, virtualStatic);
                         context.AddSource($"Construct.{cls.ClassSyntax.ToFullDisplayName()}.g.cs",
                             SourceText.From(result, Encoding.UTF8));
                         break;
@@ -254,7 +292,10 @@ public class WrapperGenerator : IIncrementalGenerator
             public required string HandleType { get; init; }
             public required string ConstructorVisibility { get; init; }
             public required bool NeedsConstructor { get; init; }
-            public required bool NeedsConstructMethod { get; init; }
+
+            public required bool HasImplicitConstruct { get; init; }
+            public required bool GenerateExplicitConstruct { get; init; }
+            public required bool GenerateImplicitConstruct { get; init; }
             public required bool NeedsExplicitHandle { get; init; }
             public required bool NeedsImplicitHandle { get; init; }
 
@@ -277,5 +318,13 @@ public class WrapperGenerator : IIncrementalGenerator
 
             public override int GetHashCode(GenerationInfo obj) => obj.ClassSyntax.ToFullDisplayName().GetHashCode();
         }
+    }
+
+    [Flags, EnumExtensions]
+    public enum ConstructType : byte
+    {
+        None = 0,
+        Explicit = 0b0001,
+        Implicit = 0b0010
     }
 }

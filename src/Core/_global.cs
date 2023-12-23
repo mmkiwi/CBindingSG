@@ -3,3 +3,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 global using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("MMKiwi.CBindingSG.SourceGenerator")]

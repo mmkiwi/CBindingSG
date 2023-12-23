@@ -17,7 +17,7 @@ internal static class Constants
     public const string Namespace = $"{nameof(MMKiwi)}.{nameof(CBindingSG)}";
     
     public const string WrapperMarkerClass = nameof(CbsgWrapperMethodAttribute);
-    public const string ConstructHelperClass = nameof(CbsgConstructionHelper);
+    public const string ConstructHelperClass = "CbsgConstructionHelper";
     public const string WrapperMarkerFullName = $"{Namespace}.{WrapperMarkerClass}";
     
     public const string HandleMarkerClass = $"{nameof(CbsgGenerateHandleAttribute)}";

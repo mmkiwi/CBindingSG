@@ -1,0 +1,41 @@
+﻿{
+  Generator: {},
+  GeneratedSources: [
+    {
+      HintName: IConstructableHandle.g.cs,
+      Source:
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+#if !CBSG_OMITINTERNAL
+#nullable enable
+using System.Diagnostics.CodeAnalysis;
+
+namespace MMKiwi.CBindingSG;
+
+#if !NET7_0_OR_GREATER
+[SuppressMessage("ReSharper", "UnusedTypeParameter", Justification = "Type arguments needed for static methods")]
+#endif
+internal interface IConstructableHandle<out THandle> where THandle : SafeHandle
+{
+#if NET7_0_OR_GREATER
+    static abstract THandle Construct(bool ownsHandle);
+#endif
+}
+#endif
+    }
+  ],
+  Diagnostics: [
+    {
+      Id: CBSG00011,
+      Title: Class must be handle,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (6,0)-(10,1),
+      MessageFormat: Class {0} must subclass SafeHandle. Parent classes: {1},
+      Message: Class HandleNoBase must subclass SafeHandle. Parent classes: object,
+      Category: CBindingSourceGenerator
+    }
+  ]
+}

@@ -2,6 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using System.Reflection;
+using System.Runtime.Versioning;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -40,9 +43,9 @@ internal static class Helpers
 
                                                                   """ + TestResources.ResourceManager.GetString("Global")!);
 
-    public static SyntaxTree TestHandleBase => GetResource("TestHandleBase");
-    public static SyntaxTree TestError => GetResource("TestError");
-    public static SyntaxTree SampleHandles => GetResource("SampleHandles");
+    public static SyntaxTree TestHandleBase(TargetFramework f) => GetResource("TestHandleBase", f);
+    public static SyntaxTree TestError => GetResource("TestError", TargetFramework.Net80);
+    public static SyntaxTree SampleHandles => GetResource("SampleHandles", TargetFramework.Net80);
 
-    public static SyntaxTree GetResource(string key) => CSharpSyntaxTree.ParseText(TestResources.ResourceManager.GetString(key)!);
+    public static SyntaxTree GetResource(string key, TargetFramework f) => CSharpSyntaxTree.ParseText(TestResources.ResourceManager.GetString(key)!, options:new CSharpParseOptions(preprocessorSymbols: f.ToPreprocessor()));
 }

@@ -2,11 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+#if !CBSG_OMITINTERNAL
+#nullable enable
 using System.Reflection;
 
 namespace MMKiwi.CBindingSG;
 
-public static class CbsgConstructionHelper
+internal static class CbsgConstructionHelper
 {
 #if NET7_0_OR_GREATER
     public static TRes Construct<TRes, THandle>(THandle handle)
@@ -83,3 +85,5 @@ public static class CbsgConstructionHelper
 #endif
     
 }
+
+#endif

@@ -60,29 +60,36 @@ public static class HandleGenerationHelper
 
         if (genInfo.GenerateConstruct)
         {
-            if (genInfo.BaseHandleType is HandleGenerator.BaseType.Parameterless)
+            switch (genInfo)
             {
-                resFile.AppendLine($$"""
-                                     
-                                        {{Constants.SgAttribute}}
-                                     #if NET_7_0_OR_GREATER
-                                         static {{className}} {{Constants.IConstructableHandle}}<{{className}}>.Construct(bool ownsHandle) => new();
-                                     #else
-                                         public static {{className}} Construct(bool ownsHandle) => new();
-                                     #endif
-                                     """);
-            }
-            else if (genInfo.BaseHandleType is HandleGenerator.BaseType.Bool)
-            {
-                resFile.AppendLine($$"""
-
-                                         {{Constants.SgAttribute}}
-                                     #if NET_7_0_OR_GREATER
-                                         static {{className}} {{Constants.IConstructableHandle}}<{{className}}>.Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
-                                     #else
-                                         public static {{className}} Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
-                                     #endif
-                                     """);
+                case { BaseHandleType: HandleGenerator.BaseType.Parameterless, StaticVirtual: true }:
+                    resFile.AppendLine($$"""
+                                         
+                                            {{Constants.SgAttribute}}
+                                             static {{className}} {{Constants.IConstructableHandle}}<{{className}}>.Construct(bool ownsHandle) => new();
+                                         """);
+                    break;
+                case { BaseHandleType: HandleGenerator.BaseType.Parameterless, StaticVirtual: false }:
+                    resFile.AppendLine($$"""
+                                         
+                                            {{Constants.SgAttribute}}
+                                             public static {{className}} Construct(bool ownsHandle) => new();
+                                         """);
+                    break;
+                case { BaseHandleType: HandleGenerator.BaseType.Bool, StaticVirtual: true }:
+                    resFile.AppendLine($$"""
+                                         
+                                             {{Constants.SgAttribute}}
+                                             static {{className}} {{Constants.IConstructableHandle}}<{{className}}>.Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
+                                         """);
+                    break;
+                case { BaseHandleType: HandleGenerator.BaseType.Bool, StaticVirtual: false }:
+                    resFile.AppendLine($$"""
+                                         
+                                             {{Constants.SgAttribute}}
+                                             public static {{className}} Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
+                                         """);
+                    break;
             }
         }
 
@@ -113,7 +120,7 @@ public static class HandleGenerationHelper
                                  """);
         }
 
-        for(int i = 0; i < parentClasses.Count + parentNamespaces.Count; i++)
+        for (int i = 0; i < parentClasses.Count + parentNamespaces.Count; i++)
             resFile.AppendLine("}");
 
         return resFile.ToString();

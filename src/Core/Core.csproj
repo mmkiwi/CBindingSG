@@ -8,6 +8,7 @@
         <RootNamespace>MMKiwi.CBindingSG</RootNamespace>
         <AssemblyName>MMKiwi.CBindingSG</AssemblyName>
         <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
+        <DefineConstants>CBSG_OMITINTERNAL</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>

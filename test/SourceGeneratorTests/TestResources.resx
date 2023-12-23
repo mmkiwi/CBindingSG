@@ -147,4 +147,9 @@
             <![CDATA[..\SampleProject\ValidExamples\WrapperHasEverything.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
+    <data name="WrapperHasImplicitConstruct" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperHasImplicitConstruct.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
 </root>

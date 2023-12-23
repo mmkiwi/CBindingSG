@@ -1,4 +1,7 @@
 using System.Collections.Immutable;
+using System.Reflection.Metadata;
+
+using Basic.Reference.Assemblies;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -20,158 +23,170 @@ public class HandleGeneratorTest
         this.output = output;
     }
 
-    [Fact]
-    public Task Driver()
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task Driver(TargetFramework f)
     {
-        var driver = GeneratorDriver([]).OutputDiagnostics(output);
+        var driver = GeneratorDriver([], f).OutputDiagnostics(output);
 
-        return Verify(driver);
+        return Verify(driver).UseDirectory($"snapshots").UseParameters(f);
     }
 
-    [Fact]
-    public Task RunResults()
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task RunResults(TargetFramework f)
     {
-        var driver = GeneratorDriver([]).OutputDiagnostics(output);
+        var driver = GeneratorDriver([], f).OutputDiagnostics(output);
 
         var runResults = driver.GetRunResult();
-        return Verify(runResults);
+        return Verify(runResults).UseDirectory($"snapshots").UseParameters(f);
     }
 
 
-    [Fact]
-    public Task TestErrorNotPartial()
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestErrorNotPartial(TargetFramework f)
     {
-        SyntaxTree source = Helpers.GetResource("HandleErrorNotPartial");
+        SyntaxTree source = Helpers.GetResource("HandleErrorNotPartial", f);
 
         var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
 
-        return Verify(runResult).UseDirectory("snapshots");
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
-    [Fact]
-    public Task TestWarnNotSealedOrAbstract()
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestWarnNotSealedOrAbstract(TargetFramework f)
     {
-        SyntaxTree source = Helpers.GetResource("HandleNotSealedOrAbstract");
+        SyntaxTree source = Helpers.GetResource("HandleNotSealedOrAbstract", f);
 
         var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
-    [Fact]
-    public Task TestWarnNoBase()
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestWarnNoBase(TargetFramework f)
     {
-        SyntaxTree source = Helpers.GetResource("HandleNoBase");
+        SyntaxTree source = Helpers.GetResource("HandleNoBase", f);
 
         var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
-    [Fact]
-    public Task TestHasConstructor()
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestHasConstructor(TargetFramework f)
     {
-        SyntaxTree source = Helpers.GetResource("HandleHasConstructor");
+        SyntaxTree source = Helpers.GetResource("HandleHasConstructor", f);
 
         var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
-    }
-    
-    [Fact]
-    public Task TestDoNotGenerateDoesntOwn()
-    {
-        SyntaxTree source = Helpers.GetResource("HandleDoNotGenerateDoesntOwn");
-
-        var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
-
-        var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
-    }
-    
-    [Fact]
-    public Task TestDoNotGenerateOwns()
-    {
-        SyntaxTree source = Helpers.GetResource("HandleDoNotGenerateOwns");
-
-        var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
-
-        var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
-    }
-    
-    [Fact]
-    public Task TestHasOwns()
-    {
-        SyntaxTree source = Helpers.GetResource("HandleHasOwns");
-
-        var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
-
-        var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
-    [Fact]
-    public Task TestHasDoesntOwn()
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestDoNotGenerateDoesntOwn(TargetFramework f)
     {
-        SyntaxTree source = Helpers.GetResource("HandleHasDoesntOwn");
+        SyntaxTree source = Helpers.GetResource("HandleDoNotGenerateDoesntOwn", f);
 
         var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
-    
-    [Fact]
-    public Task TestHasPrimaryConstructor()
+
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestDoNotGenerateOwns(TargetFramework f)
     {
-        SyntaxTree source = Helpers.GetResource("HandleHasPrimaryConstructor");
+        SyntaxTree source = Helpers.GetResource("HandleDoNotGenerateOwns", f);
 
         var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
-    
-    [Fact]
-    public Task TestHasExtraneousConstructor()
+
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestHasOwns(TargetFramework f)
     {
-        SyntaxTree source = Helpers.GetResource("HandleHasExtraneousConstructor");
+        SyntaxTree source = Helpers.GetResource("HandleHasOwns", f);
 
         var driver = GeneratorDriver([
-            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, source
-        ]).OutputDiagnostics(output);
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots");
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
+    }
+
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestHasDoesntOwn(TargetFramework f)
+    {
+        SyntaxTree source = Helpers.GetResource("HandleHasDoesntOwn", f);
+
+        var driver = GeneratorDriver([
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
+
+        var runResult = driver.GetRunResult().Results.Single();
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
+    }
+
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestHasPrimaryConstructor(TargetFramework f)
+    {
+        SyntaxTree source = Helpers.GetResource("HandleHasPrimaryConstructor", f);
+
+        var driver = GeneratorDriver([
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
+
+        var runResult = driver.GetRunResult().Results.Single();
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
+    }
+
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestHasExtraneousConstructor(TargetFramework f)
+    {
+        SyntaxTree source = Helpers.GetResource("HandleHasExtraneousConstructor", f);
+
+        var driver = GeneratorDriver([
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
+        ], f).OutputDiagnostics(output);
+
+        var runResult = driver.GetRunResult().Results.Single();
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
     [Theory]
     [ClassData(typeof(MemberVisibilities))]
-    public Task TestConstructorVisibility(MemberVisibility memberVisibility)
+    public Task TestConstructorVisibility(TargetFramework f, MemberVisibility memberVisibility)
     {
         SyntaxTree constantSource = CSharpSyntaxTree.ParseText(
             $$"""
@@ -181,34 +196,34 @@ public class HandleGeneratorTest
               }
               """);
 
-        SyntaxTree source = Helpers.GetResource("HandleConstructorVisibility");
-        var driver = GeneratorDriver([Helpers.Global, Helpers.TestError, Helpers.TestHandleBase, constantSource, source]).OutputDiagnostics(output);
+        SyntaxTree source = Helpers.GetResource("HandleConstructorVisibility", f);
+        var driver = GeneratorDriver([Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), constantSource, source], f).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
-        return Verify(runResult).UseDirectory("snapshots").UseParameters(memberVisibility);
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f, memberVisibility);
     }
-    
-    static (GeneratorDriver, Compilation) GeneratorDriver(ImmutableArray<SyntaxTree> trees)
+
+    static (GeneratorDriver, Compilation) GeneratorDriver(ImmutableArray<SyntaxTree> trees, TargetFramework f)
     {
-        string dotNetAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
+        var frameworkReferences = f switch
+        {
 
-        IEnumerable<PortableExecutableReference> references =
-        [
+            TargetFramework.Net80 => Net80.References.All,
+            TargetFramework.NetStandard20 => NetStandard20.References.All,
+            _ => throw new ArgumentOutOfRangeException(nameof(f), f, null)
+        };
 
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "mscorlib.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.Core.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.Private.CoreLib.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.Runtime.dll")),
-            MetadataReference.CreateFromFile(typeof(IConstructableWrapper<,>).Assembly.Location)
-        ];
+        PortableExecutableReference markerReference = MetadataReference.CreateFromFile(typeof(CbsgGenerateWrapperAttribute).Assembly.Location);
 
-        var compilation = CSharpCompilation.Create(Helpers.AssemblyName, syntaxTrees: trees, references: references)
-            .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-        ;
+        var compilation = CSharpCompilation.Create(Helpers.AssemblyName, syntaxTrees: [..trees,], references:
+            [
+                markerReference, ..frameworkReferences
+            ],
+            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
         var generator = new HandleGenerator();
 
-        var driver = CSharpGeneratorDriver.Create(generator);
+        var driver = CSharpGeneratorDriver.Create([generator.AsSourceGenerator()], parseOptions: new CSharpParseOptions(preprocessorSymbols: f.ToPreprocessor()));
         return (driver.RunGenerators(compilation), compilation);
     }
 }

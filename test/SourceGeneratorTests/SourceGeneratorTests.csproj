@@ -8,6 +8,7 @@
         <AssemblyName>MMKiwi.CBindingSG.$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,9 +17,122 @@
 
     <ItemGroup>
       <None Include="Resources\ErrorNotPartial.cs" />
+      <None Update="snapshots\HandleGeneratorTest.TestConstructorVisibility_f=Net80_memberVisibility=DoNotGenerate.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestConstructorVisibility_f=Net80_memberVisibility=Internal.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestConstructorVisibility_f=Net80_memberVisibility=Private.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestConstructorVisibility_f=Net80_memberVisibility=PrivateProtected.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestConstructorVisibility_f=Net80_memberVisibility=Protected.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestConstructorVisibility_f=Net80_memberVisibility=ProtectedInternal.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestConstructorVisibility_f=Net80_memberVisibility=Public.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestDoNotGenerateDoesntOwn.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestDoNotGenerateDoesntOwn_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestDoNotGenerateOwns.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestDoNotGenerateOwns_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestErrorNotPartial.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestErrorNotPartial_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasConstructor.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasConstructor_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasDoesntOwn.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasDoesntOwn_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasExtraneousConstructor.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasExtraneousConstructor_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasOwns.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasOwns_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasPrimaryConstructor.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestHasPrimaryConstructor_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestInternalHandle_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestInternalHandleNeverOwns_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestWarnNoBase.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestWarnNoBase_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestWarnNotSealedOrAbstract.received.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
+      <None Update="snapshots\HandleGeneratorTest.TestWarnNotSealedOrAbstract_f=Net80.verified.txt">
+        <ParentFile>HandleGeneratorTest</ParentFile>
+        <DependentUpon>HandleGeneratorTest.cs</DependentUpon>
+      </None>
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Basic.Reference.Assemblies.NetStandard20" Version="1.4.5" />
+        <PackageReference Include="Basic.Reference.Assemblies.Net80" Version="1.4.5" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+        <PackageReference Include="System.Collections.Immutable" Version="7.0.0" />
         <PackageReference Include="Verify.SourceGenerators" Version="2.2.*" />
         <PackageReference Include="Verify.XUnit" Version="22.8.*" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
@@ -39,12 +153,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.CodeAnalysis">
-        <HintPath>..\..\..\..\Program Files\dotnet\sdk\8.0.100\Roslyn\bincore\Microsoft.CodeAnalysis.dll</HintPath>
-      </Reference>
-      <Reference Include="Microsoft.CodeAnalysis.CSharp">
-        <HintPath>..\..\..\..\Program Files\dotnet\sdk\8.0.100\Roslyn\bincore\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      </Reference>
       <Reference Include="MMKiwi.CBindingSG.SourceGenerator">
         <HintPath>..\..\artifacts\bin\SourceGenerator\debug\MMKiwi.CBindingSG.SourceGenerator.dll</HintPath>
       </Reference>

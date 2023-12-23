@@ -4,12 +4,21 @@
 
 namespace MMKiwi.CBindingSG.SourceGeneratorTests;
 
-[UsesVerify]
-public class MemberVisibilities : TheoryData<MemberVisibility>
+public class MemberVisibilities : TheoryData<TargetFramework, MemberVisibility>
 {
     public MemberVisibilities()
     {
+        foreach (TargetFramework f in TargetFrameworkExtensions.GetValues())
         foreach (var enumValue in MemberVisibilityExtensions.GetValues())
-            Add(enumValue);
+            Add(f, enumValue);
+    }
+}
+
+public class TargetFrameworks : TheoryData<TargetFramework>
+{
+    public TargetFrameworks()
+    {
+        foreach (TargetFramework f in TargetFrameworkExtensions.GetValues())
+            Add(f);
     }
 }

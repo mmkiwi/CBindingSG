@@ -16,6 +16,9 @@ public class InteropGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        context.RegisterPostInitializationOutput(ctx 
+            => ctx.AddSource("CbsgConstructionHelper.g.cs", SourceResources.CbsgConstructionHelper));
+        
         // Do a simple filter for methods
         IncrementalValuesProvider<MethodGenerationInfo> methodDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(Constants.WrapperMarkerFullName,

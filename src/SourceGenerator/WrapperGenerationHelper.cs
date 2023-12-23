@@ -11,7 +11,7 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 
 public static class WrapperGenerationHelper
 {
-    internal static string GenerateExtensionClass(WrapperGenerator.GenerationInfo.Ok genInfo)
+    internal static string GenerateExtensionClass(WrapperGenerator.GenerationInfo.Ok genInfo, bool virtualStatic)
     {
         StringBuilder resFile = new();
 
@@ -56,20 +56,32 @@ public static class WrapperGenerationHelper
 
         string wrapperType = genInfo.WrapperType.Split('.').Last();
 
-        if (genInfo.NeedsConstructMethod)
+        switch (genInfo)
         {
-            
-            resFile.AppendLine($"""
-
-                {Constants.SgAttribute}
-            #if NET7_0_OR_GREATER
-                static global::{genInfo.WrapperType} global::{Constants.IConstructableWrapperFullName}<global::{genInfo.WrapperType}, global::{genInfo.HandleType}>.Construct(global::{genInfo.HandleType} handle) => new(handle);
-            #else
-                public static global::{genInfo.WrapperType} Construct(global::{genInfo.HandleType} handle) => new(handle);
-            #endif
-            """);
+            case { GenerateExplicitConstruct: true, HasImplicitConstruct: true }:
+                resFile.AppendLine($"""
+                                    
+                                        {Constants.SgAttribute}
+                                        static global::{genInfo.WrapperType} global::{Constants.IConstructableWrapperFullName}<global::{genInfo.WrapperType}, global::{genInfo.HandleType}>.Construct(global::{genInfo.HandleType} handle) => global::{genInfo.WrapperType}.Construct(handle);
+                                    """);
+                break;
+            case { GenerateExplicitConstruct: true, HasImplicitConstruct: false }:
+                resFile.AppendLine($"""
+                                    
+                                        {Constants.SgAttribute}
+                                        static global::{genInfo.WrapperType} global::{Constants.IConstructableWrapperFullName}<global::{genInfo.WrapperType}, global::{genInfo.HandleType}>.Construct(global::{genInfo.HandleType} handle) => new(handle);
+                                    """);
+                break;
+            case {GenerateImplicitConstruct:true}:
+                resFile.AppendLine($"""
+                                    
+                                        {Constants.SgAttribute}
+                                        static global::{genInfo.WrapperType} Construct(global::{genInfo.HandleType} handle) => new(handle);
+                                    """);
+                break;
         }
-
+        
+        
         if (genInfo.NeedsConstructor)
         {
             resFile.AppendLine($"""

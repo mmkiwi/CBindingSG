@@ -23,6 +23,19 @@
     <ItemGroup>
         <ProjectReference Include="..\Core\Core.csproj" GeneratePathProperty="true" PrivateAssets="all"/>
     </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Update="SourceGenResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>TestResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="SourceGenResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>SourceGenResources.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
     <PropertyGroup>
         <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
     </PropertyGroup>
