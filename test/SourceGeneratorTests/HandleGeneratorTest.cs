@@ -3,13 +3,11 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-using MMKiwi.CBindingSG;
 using MMKiwi.CBindingSG.SourceGenerator;
-using MMKiwi.CBindingSG.SourceGeneratorTests;
 
 using Xunit.Abstractions;
 
-namespace SourceGeneratorTests;
+namespace MMKiwi.CBindingSG.SourceGeneratorTests;
 
 [UsesVerify]
 public class HandleGeneratorTest
