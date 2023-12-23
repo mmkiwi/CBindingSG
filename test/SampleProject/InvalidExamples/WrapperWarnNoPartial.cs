@@ -2,10 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-namespace SampleProject;
+namespace SampleProject.ValidExamples;
 
 [CbsgGenerateWrapper]
-public sealed partial class SampleWrapper : IDisposable, IConstructableWrapper<SampleWrapper, SampleHandleNeverOwns>, IHasHandle<SampleHandleNeverOwns>
+public sealed class WrapperWarnNoPartial : IDisposable, IConstructableWrapper<WrapperWarnNoPartial, SampleHandleNeverOwns>, IHasHandle<SampleHandleNeverOwns>
 {
     public void Dispose() => throw new NotImplementedException();
 }

@@ -44,49 +44,107 @@
     </data>
     <data name="HandleConstructorVisibility" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
-            <![CDATA[..\SampleProject\InvalidExamples\HandleConstructorVisibility.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+            <![CDATA[..\SampleProject\ValidExamples\HandleConstructorVisibility.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-
     <data name="HandleErrorNotPartial" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\InvalidExamples\HandleErrorNotPartial.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-
     <data name="HandleHasExtraneousConstructor" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\InvalidExamples\HandleHasExtraneousConstructor.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-
     <data name="HandleHasExtraneousConstructor" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\InvalidExamples\HandleHasExtraneousConstructor.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-
     <data name="HandleDoNotGenerateOwns" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\ValidExamples\HandleDoNotGenerateOwns.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-
     <data name="HandleDoNotGenerateDoesntOwn" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\ValidExamples\HandleDoNotGenerateDoesntOwn.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-
     <data name="HandleHasOwns" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\ValidExamples\HandleHasOwns.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-
     <data name="HandleHasDoesntOwn" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\ValidExamples\HandleHasDoesntOwn.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="SampleHandles" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\SampleHandles.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+      <data name="WrapperDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperDefault.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperDefaultNeverOwns" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperDefaultNeverOwns.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperHasConstructor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperHasConstructor.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperHasImplicitHandle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperHasImplicitHandle.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperHasExplicitHandle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperHasExplicitHandle.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperWarnNoPartial" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\InvalidExamples\WrapperWarnNoPartial.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperWarnMissingIDisposable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperWarnMissingIDisposable.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperWarnDoesNotImplement" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperWarnDoesNotImplement.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperConstructorVisibility" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperConstructorVisibility.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperHandleSetVisibility" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperHandleSetVisibility.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperHandleVisibility" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperHandleVisibility.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperHasEverything" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperHasEverything.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
 </root>

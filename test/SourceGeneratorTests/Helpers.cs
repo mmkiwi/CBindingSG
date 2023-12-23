@@ -42,6 +42,7 @@ internal static class Helpers
 
     public static SyntaxTree TestHandleBase => GetResource("TestHandleBase");
     public static SyntaxTree TestError => GetResource("TestError");
+    public static SyntaxTree SampleHandles => GetResource("SampleHandles");
 
     public static SyntaxTree GetResource(string key) => CSharpSyntaxTree.ParseText(TestResources.ResourceManager.GetString(key)!);
 }

@@ -7,7 +7,7 @@
 #nullable enable
 namespace SampleProject.ValidExamples {
 
-internal sealed partial class HandleConstructorVisibility
+internal abstract partial class HandleConstructorVisibility
 {
 
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]

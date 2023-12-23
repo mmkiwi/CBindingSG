@@ -50,8 +50,6 @@ public class WrapperGenerator : IIncrementalGenerator
         MemberVisibility handleVisibility = MemberVisibility.Internal;
         MemberVisibility handleSetVisibility = MemberVisibility.DoNotGenerate;
 
-        bool neverOwns = classSymbol.GetAttributes().Any(att => att.AttributeClass?.ToDisplayString() == Constants.NeverOwnsMarkerFullName);
-
         foreach (KeyValuePair<string, TypedConstant> namedArgument in attribute.NamedArguments)
         {
             switch (namedArgument.Key)
@@ -82,6 +80,8 @@ public class WrapperGenerator : IIncrementalGenerator
         bool hasExplicitHandle = true;
         bool hasImplicitHandle = true;
 
+        bool neverOwns = false;
+        
         bool hasIDisposable = false;
 
         foreach (INamedTypeSymbol baseInterface in classSymbol.Interfaces)
@@ -103,6 +103,8 @@ public class WrapperGenerator : IIncrementalGenerator
                 }
             }
 
+
+                
             if (baseInterface.IsGenericType &&
                 baseInterface.ConstructedFrom.ToDisplayString().StartsWith($"{Constants.IHasHandleFullName}<"))
             {
@@ -113,6 +115,8 @@ public class WrapperGenerator : IIncrementalGenerator
 
                 ITypeSymbol handleType = baseInterface.TypeArguments[0];
                 handleTypeStr = handleType.ToDisplayString();
+                
+                neverOwns |= handleType.GetAttributes().Any(att => att.AttributeClass?.ToDisplayString() == Constants.NeverOwnsMarkerFullName);
 
                 foreach (var member in Enumerable.OfType<IPropertySymbol>(baseInterface.GetMembers()))
                 {
@@ -150,15 +154,9 @@ public class WrapperGenerator : IIncrementalGenerator
             return new GenerationInfo.ErrorDoesNotImplement { ClassSyntax = classSyntax };
         }
 
-        if (!neverOwns && !hasIDisposable) // Check to see if parent classes have IDisposable
-        {
-            hasIDisposable = FindIDisposableInParent(classSymbol);
-        }
-
         return new GenerationInfo.Ok
         {
             ClassSyntax = classSyntax,
-            NeverOwns = neverOwns,
             NeedsConstructor = !hasConstructor,
             NeedsConstructMethod = !hasConstructMethod && ctorVisibility != MemberVisibility.DoNotGenerate,
             ConstructorVisibility = ctorVisibility.ToStringFast(),
@@ -171,6 +169,8 @@ public class WrapperGenerator : IIncrementalGenerator
             MissingIDisposable = !neverOwns && !hasIDisposable
         };
 
+        /*
+         * child types should reimplement IDisposable
         static bool FindIDisposableInParent(INamedTypeSymbol classSymbol)
         {
             var parent = classSymbol.BaseType;
@@ -186,6 +186,7 @@ public class WrapperGenerator : IIncrementalGenerator
 
             return false;
         }
+        */
     }
 
     static void Execute(Compilation compilation, ImmutableArray<GenerationInfo> classes,
@@ -260,7 +261,6 @@ public class WrapperGenerator : IIncrementalGenerator
             public required string HandleVisibility { get; init; }
             public required string? HandleSetVisibility { get; init; }
             public required bool MissingIDisposable { get; init; }
-            public required bool NeverOwns { get; init; }
         }
 
         public override int GetHashCode()

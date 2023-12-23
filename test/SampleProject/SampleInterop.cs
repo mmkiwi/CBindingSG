@@ -8,10 +8,10 @@ public static partial class SampleInterop
 {
 #if NET7_0_OR_GREATER
     [LibraryImport("DLL_NAME")]
-    private static partial int SampleFunc(SampleHandle handle);
+    private static partial int SampleFunc(SampleHandleNeverOwns handleNeverOwns);
 #else
     [DllImport("DLL_NAME")]
-    private static extern int SampleFunc(SampleHandle handle);
+    private static extern int SampleFunc(SampleHandleNeverOwns handleNeverOwns);
 #endif
 
     // This method will use the error method defined on the assmebly

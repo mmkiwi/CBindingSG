@@ -4,7 +4,8 @@
 
 namespace SampleProject.ValidExamples;
 
-[CbsgGenerateHandle(ConstructorVisibility = StaticValue.ConstructorVisibility)]
-internal sealed partial class HandleConstructorVisibility : FullyGenerated.TestHandleBase, IConstructableHandle<HandleConstructorVisibility>
+[CbsgGenerateWrapper]
+public sealed partial class WrapperDefault : IDisposable, IConstructableWrapper<WrapperDefault, SampleHandle>, IHasHandle<SampleHandle>
 {
+    public void Dispose() => throw new NotImplementedException();
 }

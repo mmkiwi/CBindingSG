@@ -1,0 +1,16 @@
+﻿{
+  Generator: {},
+  GeneratedSources: null,
+  Diagnostics: [
+    {
+      Id: CBSG0002,
+      Title: Method must be partial,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (6,0)-(10,1),
+      MessageFormat: {1} must be partial {0},
+      Message: Class must be partial WrapperWarnNoPartial,
+      Category: CBindingSourceGenerator
+    }
+  ]
+}
