@@ -1,0 +1,16 @@
+﻿{
+  Generator: {},
+  GeneratedSources: null,
+  Diagnostics: [
+    {
+      Id: CBSG00011,
+      Title: Class must be handle,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (6,0)-(10,1),
+      MessageFormat: Class {0} must subclass SafeHandle. Parent classes: {1},
+      Message: Class HandleNoBase must subclass SafeHandle. Parent classes: object,
+      Category: CBindingSourceGenerator
+    }
+  ]
+}

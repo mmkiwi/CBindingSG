@@ -15,17 +15,14 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 [Generator]
 public class HandleGenerator : IIncrementalGenerator
 {
-    const string AttributeFull =
-        $"{nameof(MMKiwi)}.{nameof(CBindingSG)}.{nameof(CbsgGenerateHandleAttribute)}";
-
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Do a simple filter for methods
         IncrementalValuesProvider<GenerationInfo> methodDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(
-                AttributeFull,
-                predicate: (node, _) => node is ClassDeclarationSyntax, // select methods with attributes
-                transform: GetClasses); // sect the methods with the [GdalWrapperMethod] attribute
+                Constants.HandleMarkerFullName,
+                predicate: (node, _) => node is ClassDeclarationSyntax,// select methods with attributes
+                transform: GetClasses);// sect the methods with the [CbsgWrapperMethod] attribute
 
         // Combine the selected methods with the `Compilation`
         IncrementalValueProvider<(Compilation, ImmutableArray<GenerationInfo>)> compilationAndMethods
@@ -58,7 +55,10 @@ public class HandleGenerator : IIncrementalGenerator
         if (!isPartial)
         {
             //If the method is not partial, skip everything else and just report an error. 
-            return new GenerationInfo.ErrorNotPartial { ClassSymbol = classSyntax, };
+            return new GenerationInfo.ErrorNotPartial
+            {
+                ClassSymbol = classSyntax,
+            };
         }
 
         MemberVisibility constructorVisibility = MemberVisibility.Protected;
@@ -79,7 +79,7 @@ public class HandleGenerator : IIncrementalGenerator
             }
         }
 
-        string? baseHandle = null;
+        BaseType baseFound = BaseType.NotFound;
 
         List<string> parentClasses = [];
 
@@ -88,24 +88,22 @@ public class HandleGenerator : IIncrementalGenerator
         {
             string ds = parentClass.ToDisplayString();
             parentClasses.Add(ds);
-            if (ds == "MMKiwi.GdalNet.Handles.GdalInternalHandleNeverOwns")
-            {
-                baseHandle = "GdalInternalHandleNeverOwns";
-                break;
-            }
-
-            if (ds == "MMKiwi.GdalNet.Handles.GdalInternalHandle")
+            if (ds == "System.Runtime.InteropServices.SafeHandle")
             {
                 needsDoesntOwn = needsOwns = true;
-                baseHandle = "GdalInternalHandle";
+                needsConstructMethod = parentClass.Constructors.Any(c => c.Parameters.Length == 0);
+                baseFound = GetConstructorType(classSymbol, classSymbol.BaseType!);
                 break;
             }
 
             parentClass = parentClass.BaseType;
         }
 
-        if (baseHandle is null)
-            return new GenerationInfo.ErrorBadBase() { ClassSymbol = classSyntax, ParentClass = parentClasses };
+        if (baseFound == BaseType.NotFound)
+            return new GenerationInfo.ErrorBadBase()
+            {
+                ClassSymbol = classSyntax, ParentClass = parentClasses
+            };
 
         if ((needsOwns && generateOwns) || (needsDoesntOwn && generateDoesntOwn))
         {
@@ -126,7 +124,7 @@ public class HandleGenerator : IIncrementalGenerator
         foreach (var baseInterface in classSymbol.Interfaces.Where(baseInterface
                      => baseInterface.IsGenericType &&
                         baseInterface.ConstructedFrom.ToDisplayString()
-                            .StartsWith("MMKiwi.GdalNet.Handles.IConstructableHandle<")))
+                            .StartsWith($"{Constants.IConstructableHandleFullName}<")))
         {
             needsConstructMethod = true;
             foreach (IMethodSymbol symbol in baseInterface.GetMembers().OfType<IMethodSymbol>())
@@ -138,23 +136,64 @@ public class HandleGenerator : IIncrementalGenerator
 
 
         bool hasConstructor = classSymbol.Constructors.Any(constructor =>
-            constructor.Parameters.Length == 1 && constructor.Parameters[0].Type.ToDisplayString() == "bool");
-        
+            constructor.Parameters is
+            [
+                { Type.SpecialType: SpecialType.System_Boolean }
+            ]);
+
         return new GenerationInfo.Ok
         {
             ClassSymbol = classSyntax,
             GenerateConstruct = needsConstructMethod && !hasConstructMethod,
-            BaseHandleType = baseHandle,
+            BaseHandleType = baseFound,
             GenerateConstructor =
-                !hasConstructor && baseHandle == "GdalInternalHandle" &&
+                !hasConstructor && baseFound == BaseType.Bool &&
                 constructorVisibility != MemberVisibility.DoNotGenerate,
             ConstructorVisibility = constructorVisibility.ToStringFast(),
             IsSealedOrAbstract = classSymbol.IsAbstract || classSymbol.IsSealed,
-            GenerateOwns = needsOwns && generateOwns && !hasOwns,
-            GenerateDoesntOwn = needsDoesntOwn && generateDoesntOwn && !hasDoesntOwn
+            GenerateOwns = baseFound != BaseType.Parameterless && needsOwns && generateOwns && !hasOwns,
+            GenerateDoesntOwn = baseFound != BaseType.Parameterless && needsDoesntOwn && generateDoesntOwn && !hasDoesntOwn
         };
     }
+    private static BaseType GetConstructorType(INamedTypeSymbol currClass, INamedTypeSymbol baseClass)
+    {
+        if (SearchConstructors(currClass, out BaseType type))
+        {
+            return type;
+        }
+        if (SearchConstructors(baseClass, out type))
+        {
+            return type;
+        }
+        
+        return BaseType.Unknown;
 
+        bool SearchConstructors(INamedTypeSymbol namedTypeSymbol, out BaseType type)
+        {
+
+            foreach (var constructor in namedTypeSymbol.Constructors)
+            {
+                if (constructor.DeclaringSyntaxReferences.Length == 0)
+                    // This is an autogenerated constructor, skip 
+                    continue;
+            
+                switch (constructor.Parameters)
+                {
+                    case []:
+                        type = BaseType.Parameterless;
+                        return true;
+                    case [{ Type.SpecialType: SpecialType.System_Boolean }]:
+                        type = BaseType.Bool;
+                        return true;
+                }
+            }
+            type = BaseType.Unknown; 
+            return false;
+        }
+    }
+
+    
+    
     static void Execute(Compilation compilation, ImmutableArray<GenerationInfo> classes,
         SourceProductionContext context)
     {
@@ -169,12 +208,12 @@ public class HandleGenerator : IIncrementalGenerator
             switch (cls)
             {
                 case GenerationInfo.ErrorBadBase ebb:
-                    context.ReportDiagnostic(Diagnostic.Create(Global.Diag11ImplementHandle,
+                    context.ReportDiagnostic(Diagnostic.Create(Constants.Diag11ImplementHandle,
                         cls.ClassSymbol.GetLocation(),
                         cls.ClassSymbol.Identifier, string.Join(", ", ebb.ParentClass)));
                     break;
                 case GenerationInfo.ErrorNotPartial:
-                    context.ReportDiagnostic(Diagnostic.Create(Global.Diag02IsNotPartial,
+                    context.ReportDiagnostic(Diagnostic.Create(Constants.Diag02IsNotPartial,
                         cls.ClassSymbol.GetLocation(),
                         [cls.ClassSymbol.Identifier, "Class"]));
                     break;
@@ -182,7 +221,7 @@ public class HandleGenerator : IIncrementalGenerator
                     {
                         if (!genInfo.IsSealedOrAbstract)
                         {
-                            context.ReportDiagnostic(Diagnostic.Create(Global.Diag10SealAbstract,
+                            context.ReportDiagnostic(Diagnostic.Create(Constants.Diag10SealAbstract,
                                 cls.ClassSymbol.GetLocation(),
                                 cls.ClassSymbol.Identifier));
                         }
@@ -227,11 +266,19 @@ public class HandleGenerator : IIncrementalGenerator
         {
             public required bool GenerateConstructor { get; init; }
             public required bool GenerateConstruct { get; init; }
-            public required string BaseHandleType { get; init; }
+            public required BaseType BaseHandleType { get; init; }
             public required string ConstructorVisibility { get; init; }
             public required bool IsSealedOrAbstract { get; init; }
             public required bool GenerateOwns { get; init; }
             public required bool GenerateDoesntOwn { get; init; }
         }
+    }
+
+    public enum BaseType
+    {
+        NotFound,
+        Bool,
+        Parameterless,
+        Unknown
     }
 }

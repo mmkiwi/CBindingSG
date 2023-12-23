@@ -1,0 +1,31 @@
+﻿{
+  Generator: {},
+  GeneratedSources: [
+    {
+      HintName: Construct.HandleHasOwns.SampleProject.ValidExamples.g.cs,
+      Source:
+#nullable enable
+namespace SampleProject.ValidExamples {
+
+public abstract partial class HandleHasOwns
+{
+
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+#if NET_7_0_OR_GREATER
+    static HandleHasOwns IConstructableHandle<HandleHasOwns>.Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
+#else
+    public static HandleHasOwns Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
+#endif
+    
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    public class DoesntOwn() : HandleHasOwns(false);
+
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    protected HandleHasOwns(bool ownsHandle): base(ownsHandle) { }
+}
+}
+
+    }
+  ],
+  Diagnostics: null
+}

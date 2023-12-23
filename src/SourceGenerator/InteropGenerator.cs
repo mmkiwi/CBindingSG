@@ -18,9 +18,9 @@ public class InteropGenerator : IIncrementalGenerator
     {
         // Do a simple filter for methods
         IncrementalValuesProvider<MethodGenerationInfo> methodDeclarations = context.SyntaxProvider
-            .ForAttributeWithMetadataName(InteropGenerationHelper.MarkerFullName,
+            .ForAttributeWithMetadataName(Constants.WrapperMarkerFullName,
                 predicate: (node, _) => node is MethodDeclarationSyntax,// select methods with attributes
-                transform: GetMethodToGenerate)// sect the methods with the [GdalWrapperMethod] attribute
+                transform: GetMethodToGenerate)// sect the methods with the [CbsgWrapperMethod] attribute
             .Where(static m => m is not null)!;// filter out attributed methods that we don't care about
 
         // Combine the selected methods with the `Compilation`
@@ -41,8 +41,8 @@ public class InteropGenerator : IIncrementalGenerator
 
         foreach (var attributeData in methodSymbol.GetAttributes()
                      .Where(attributeData =>
-                         attributeData.AttributeClass?.Name == InteropGenerationHelper.MarkerClass &&
-                         attributeData.AttributeClass.ToDisplayString() == InteropGenerationHelper.MarkerFullName))
+                         attributeData.AttributeClass?.Name == Constants.WrapperMarkerClass &&
+                         attributeData.AttributeClass.ToDisplayString() == Constants.WrapperMarkerFullName))
         {
             foreach (KeyValuePair<string, TypedConstant> namedArgument in attributeData.NamedArguments)
             {
@@ -52,10 +52,48 @@ public class InteropGenerator : IIncrementalGenerator
                 }
             }
 
-            return new MethodGenerationInfo(methodSyntax, methodName);
+            string? errorMethod = FindErrorMethod(methodSymbol);
+
+            return new MethodGenerationInfo(methodSyntax, methodName, errorMethod);
         }
         // we didn't find the attribute we were looking for
         return null;
+    }
+    private static string? FindErrorMethod(IMethodSymbol methodSymbol)
+    {
+        if (CheckAttributeList(methodSymbol.GetAttributes(), out string? result))
+            return result;
+
+        ISymbol? parent = methodSymbol.ContainingSymbol;
+        while (parent is not null)
+        {
+            if (CheckAttributeList(parent.GetAttributes(), out result))
+                return result;
+            parent = parent.ContainingSymbol;
+        }
+        return result;
+
+        bool CheckAttributeList(ImmutableArray<AttributeData> attributes, out string? s)
+        {
+            foreach (AttributeData attribute in attributes)
+            {
+                if (attribute.AttributeClass?.ToDisplayString() == Constants.ErrorMarkerFullName
+                    && attribute.ConstructorArguments is
+                    [
+                        { Kind: TypedConstantKind.Type },
+                        { Kind: TypedConstantKind.Primitive, Type: {SpecialType: SpecialType.System_String} }
+                    ])
+                {
+                    INamedTypeSymbol typeArg = (INamedTypeSymbol)attribute.ConstructorArguments[0].Value!;
+                    string methodArg = attribute.ConstructorArguments[1].Value!.ToString();
+
+                    s = $"{typeArg.ToDisplayString()}.{methodArg}";
+                    return true;
+                }
+            }
+            s = null;
+            return false;
+        }
     }
 
     static void Execute(Compilation compilation, ImmutableArray<MethodGenerationInfo> methods, SourceProductionContext context)
@@ -74,7 +112,7 @@ public class InteropGenerator : IIncrementalGenerator
             {
                 foreach (var method in cls)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Global.Diag01ParentNotFound,
+                    context.ReportDiagnostic(Diagnostic.Create(Constants.Diag01ParentNotFound,
                         method.Method.GetLocation(),
                         method.Method.ToDiagString()));
                 }
@@ -101,4 +139,7 @@ public class InteropGenerator : IIncrementalGenerator
             return null;
         }
     }
+
+
+    public record MethodGenerationInfo(MethodDeclarationSyntax Method, string TargetName, string? ErrorMethod);
 }

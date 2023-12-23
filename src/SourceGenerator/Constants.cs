@@ -2,15 +2,44 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using System.Runtime.InteropServices;
+
 using Microsoft.CodeAnalysis;
 
 namespace MMKiwi.CBindingSG.SourceGenerator;
 
-internal static class Global
+internal static class Constants
 {
     public const string SgAttribute = """
                                       [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
                                       """;
+
+    public const string Namespace = $"{nameof(MMKiwi)}.{nameof(CBindingSG)}";
+    
+    public const string WrapperMarkerClass = nameof(CbsgWrapperMethodAttribute);
+    public const string ConstructHelperClass = nameof(CbsgConstructionHelper);
+    public const string WrapperMarkerFullName = $"{Namespace}.{WrapperMarkerClass}";
+    
+    public const string HandleMarkerClass = $"{nameof(CbsgGenerateHandleAttribute)}";
+    public const string HandleMarkerFullName = $"{Namespace}.{HandleMarkerClass}";
+
+    public const string ErrorMarkerClass = nameof(CbsgErrorMethodAttribute);
+    public const string ErrorMarkerFullName = $"{Namespace}.{ErrorMarkerClass}";
+    
+    public const string GenWrapperMarkerClass = nameof(CbsgGenerateWrapperAttribute);
+    public const string GenWrapperMarkerFullName = $"{Namespace}.{GenWrapperMarkerClass}";
+    
+    public const string NeverOwnsMarkerClass = nameof(CbsgNeverOwnsAttribute);
+    public const string NeverOwnsMarkerFullName = $"{Namespace}.{NeverOwnsMarkerClass}";
+
+    public const string IHasHandle = "IHasHandle";
+    public const string IHasHandleFullName = $"{Namespace}.{IHasHandle}";
+
+    public const string IConstructableWrapper = "IConstructableWrapper";
+    public const string IConstructableWrapperFullName = $"{Namespace}.{IConstructableWrapper}";
+    
+    public const string IConstructableHandle = "IConstructableHandle";
+    public const string IConstructableHandleFullName = $"{Namespace}.{IConstructableHandle}";
 
     /// <summary>
     /// Could not generate wrapper method for {0} because the parent class could not be found

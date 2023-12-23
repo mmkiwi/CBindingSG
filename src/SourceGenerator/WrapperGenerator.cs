@@ -13,14 +13,14 @@ using Microsoft.CodeAnalysis.Text;
 namespace MMKiwi.CBindingSG.SourceGenerator;
 
 [Generator]
-public class ConstructGenerator : IIncrementalGenerator
+public class WrapperGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Do a simple filter for methods
         IncrementalValuesProvider<GenerationInfo> methodDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(
-                ConstructGenerationHelper.MarkerFullName,
+                Constants.GenWrapperMarkerFullName,
                 predicate: (node, _) => node is ClassDeclarationSyntax, // select methods with attributes
                 transform: GetMethodsToGenerate); // sect the methods with the [CbsgWrapperMethod] attribute
 
@@ -49,6 +49,8 @@ public class ConstructGenerator : IIncrementalGenerator
         MemberVisibility ctorVisibility = MemberVisibility.Private;
         MemberVisibility handleVisibility = MemberVisibility.Internal;
         MemberVisibility handleSetVisibility = MemberVisibility.DoNotGenerate;
+
+        bool neverOwns = classSymbol.GetAttributes().Any(att => att.AttributeClass?.ToDisplayString() == Constants.NeverOwnsMarkerFullName);
 
         foreach (KeyValuePair<string, TypedConstant> namedArgument in attribute.NamedArguments)
         {
@@ -80,13 +82,12 @@ public class ConstructGenerator : IIncrementalGenerator
         bool hasExplicitHandle = true;
         bool hasImplicitHandle = true;
 
-        bool needsIDisposable = false;
         bool hasIDisposable = false;
 
         foreach (INamedTypeSymbol baseInterface in classSymbol.Interfaces)
         {
             if (baseInterface.IsGenericType &&
-                baseInterface.ConstructedFrom.ToDisplayString().StartsWith("MMKiwi.GdalNet.IConstructableWrapper<"))
+                baseInterface.ConstructedFrom.ToDisplayString().StartsWith($"{Constants.IConstructableWrapperFullName}<"))
             {
                 hasConstructMethod = false;
                 foreach (ISymbol member in baseInterface.GetMembers())
@@ -103,7 +104,7 @@ public class ConstructGenerator : IIncrementalGenerator
             }
 
             if (baseInterface.IsGenericType &&
-                baseInterface.ConstructedFrom.ToDisplayString().StartsWith("MMKiwi.GdalNet.IHasHandle<"))
+                baseInterface.ConstructedFrom.ToDisplayString().StartsWith($"{Constants.IHasHandleFullName}<"))
             {
                 // These are only true if it implements IHasHandle
                 hasExplicitHandle = false;
@@ -112,24 +113,6 @@ public class ConstructGenerator : IIncrementalGenerator
 
                 ITypeSymbol handleType = baseInterface.TypeArguments[0];
                 handleTypeStr = handleType.ToDisplayString();
-
-                var handleParent = handleType;
-                while (handleParent is not null)
-                {
-                    if (handleParent.ToDisplayString() == "MMKiwi.GdalNet.Handles.GdalInternalHandleNeverOwns")
-                    {
-                        needsIDisposable = false;
-                        break;
-                    }
-
-                    if (handleParent.ToDisplayString() == "MMKiwi.GdalNet.Handles.GdalInternalHandle")
-                    {
-                        needsIDisposable = true;
-                        break;
-                    }
-
-                    handleParent = handleParent.BaseType;
-                }
 
                 foreach (var member in Enumerable.OfType<IPropertySymbol>(baseInterface.GetMembers()))
                 {
@@ -167,7 +150,7 @@ public class ConstructGenerator : IIncrementalGenerator
             return new GenerationInfo.ErrorDoesNotImplement { ClassSyntax = classSyntax };
         }
 
-        if (needsIDisposable && !hasIDisposable) // Check to see if parent classes have IDisposable
+        if (!neverOwns && !hasIDisposable) // Check to see if parent classes have IDisposable
         {
             hasIDisposable = FindIDisposableInParent(classSymbol);
         }
@@ -175,6 +158,7 @@ public class ConstructGenerator : IIncrementalGenerator
         return new GenerationInfo.Ok
         {
             ClassSyntax = classSyntax,
+            NeverOwns = neverOwns,
             NeedsConstructor = !hasConstructor,
             NeedsConstructMethod = !hasConstructMethod && ctorVisibility != MemberVisibility.DoNotGenerate,
             ConstructorVisibility = ctorVisibility.ToStringFast(),
@@ -184,7 +168,7 @@ public class ConstructGenerator : IIncrementalGenerator
             NeedsImplicitHandle = !hasImplicitHandle && handleVisibility != MemberVisibility.DoNotGenerate,
             HandleVisibility = handleVisibility.ToStringFast(),
             HandleSetVisibility = handleSetVisibility.ToStringFast(),
-            MissingIDisposable = needsIDisposable && !hasIDisposable
+            MissingIDisposable = !neverOwns && !hasIDisposable
         };
 
         static bool FindIDisposableInParent(INamedTypeSymbol classSymbol)
@@ -218,13 +202,13 @@ public class ConstructGenerator : IIncrementalGenerator
             switch (cls)
             {
                 case GenerationInfo.ErrorNotPartial:
-                    context.ReportDiagnostic(Diagnostic.Create(Global.Diag02IsNotPartial,
+                    context.ReportDiagnostic(Diagnostic.Create(Constants.Diag02IsNotPartial,
                                                                cls.ClassSyntax.GetLocation(),
                                                                cls.ClassSyntax.Identifier, 
                                                                "Class"));
                     break;
                 case GenerationInfo.ErrorDoesNotImplement:
-                    context.ReportDiagnostic(Diagnostic.Create(Global.Diag09NoImplement,
+                    context.ReportDiagnostic(Diagnostic.Create(Constants.Diag09NoImplement,
                         cls.ClassSyntax.GetLocation(),
                         cls.ClassSyntax.Identifier));
                     break;
@@ -240,13 +224,13 @@ public class ConstructGenerator : IIncrementalGenerator
                     {
                         if (genInfo.MissingIDisposable)
                         {
-                            context.ReportDiagnostic(Diagnostic.Create(Global.Diag08IDisposable,
+                            context.ReportDiagnostic(Diagnostic.Create(Constants.Diag08IDisposable,
                                 cls.ClassSyntax.GetLocation(),
                                 cls.ClassSyntax.Identifier));
                         }
 
                         // generate the source code and add it to the output
-                        string result = ConstructGenerationHelper.GenerateExtensionClass(genInfo);
+                        string result = WrapperGenerationHelper.GenerateExtensionClass(genInfo);
                         context.AddSource($"Construct.{cls.ClassSyntax.ToFullDisplayName()}.g.cs",
                             SourceText.From(result, Encoding.UTF8));
                         break;
@@ -275,7 +259,8 @@ public class ConstructGenerator : IIncrementalGenerator
 
             public required string HandleVisibility { get; init; }
             public required string? HandleSetVisibility { get; init; }
-            public bool MissingIDisposable { get; internal init; }
+            public required bool MissingIDisposable { get; init; }
+            public required bool NeverOwns { get; init; }
         }
 
         public override int GetHashCode()

@@ -12,10 +12,6 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 
 public static class HandleGenerationHelper
 {
-    public const string MarkerNamespace = $"{nameof(MMKiwi)}.{nameof(CBindingSG)}";
-    public const string MarkerClass = $"{nameof(CbsgGenerateWrapperAttribute)}";
-    public const string MarkerFullName = $"{MarkerNamespace}.{MarkerClass}";
-
     internal static string GenerateExtensionClass(HandleGenerator.GenerationInfo.Ok genInfo)
     {
         StringBuilder resFile = new();
@@ -64,21 +60,28 @@ public static class HandleGenerationHelper
 
         if (genInfo.GenerateConstruct)
         {
-            Debug.Assert(genInfo.BaseHandleType is "GdalInternalHandle" or "GdalInternalHandleNeverOwns");
-            if (genInfo.BaseHandleType is "GdalInternalHandleNeverOwns")
+            if (genInfo.BaseHandleType is HandleGenerator.BaseType.Parameterless)
             {
                 resFile.AppendLine($$"""
                                      
-                                         {{Global.SgAttribute}}
-                                         static {{className}} IConstructableHandle<{{className}}>.Construct(bool ownsHandle) => new();
+                                        {{Constants.SgAttribute}}
+                                     #if NET_7_0_OR_GREATER
+                                         static {{className}} {{Constants.IConstructableHandle}}<{{className}}>.Construct(bool ownsHandle) => new();
+                                     #else
+                                         public static {{className}} Construct(bool ownsHandle) => new();
+                                     #endif
                                      """);
             }
-            else if (genInfo.BaseHandleType is "GdalInternalHandle")
+            else if (genInfo.BaseHandleType is HandleGenerator.BaseType.Bool)
             {
                 resFile.AppendLine($$"""
-                                     
-                                         {{Global.SgAttribute}}
-                                         static {{className}} IConstructableHandle<{{className}}>.Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
+
+                                         {{Constants.SgAttribute}}
+                                     #if NET_7_0_OR_GREATER
+                                         static {{className}} {{Constants.IConstructableHandle}}<{{className}}>.Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
+                                     #else
+                                         public static {{className}} Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
+                                     #endif
                                      """);
             }
         }
@@ -87,7 +90,7 @@ public static class HandleGenerationHelper
         {
             resFile.AppendLine($$"""
                                      
-                                     {{Global.SgAttribute}}
+                                     {{Constants.SgAttribute}}
                                      public class Owns() : {{className}}(true);
                                  """);
         }
@@ -96,7 +99,7 @@ public static class HandleGenerationHelper
         {
             resFile.AppendLine($$"""
                                      
-                                     {{Global.SgAttribute}}
+                                     {{Constants.SgAttribute}}
                                      public class DoesntOwn() : {{className}}(false);
                                  """);
         }
@@ -105,7 +108,7 @@ public static class HandleGenerationHelper
         {
             resFile.AppendLine($$"""
                                  
-                                     {{Global.SgAttribute}}
+                                     {{Constants.SgAttribute}}
                                      {{genInfo.ConstructorVisibility}} {{className}}(bool ownsHandle): base(ownsHandle) { }
                                  """);
         }

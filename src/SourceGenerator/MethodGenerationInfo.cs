@@ -6,4 +6,3 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MMKiwi.CBindingSG.SourceGenerator;
 
-public record MethodGenerationInfo(MethodDeclarationSyntax Method, string TargetName);

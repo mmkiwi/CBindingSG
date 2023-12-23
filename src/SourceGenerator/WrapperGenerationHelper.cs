@@ -9,13 +9,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MMKiwi.CBindingSG.SourceGenerator;
 
-public static class ConstructGenerationHelper
+public static class WrapperGenerationHelper
 {
-    public const string MarkerNamespace = $"{nameof(MMKiwi)}.{nameof(CBindingSG)}";
-    public const string MarkerClass = nameof(CbsgGenerateWrapperAttribute);
-    public const string MarkerFullName = $"{MarkerNamespace}.{MarkerClass}";
-
-    internal static string GenerateExtensionClass(ConstructGenerator.GenerationInfo.Ok genInfo)
+    internal static string GenerateExtensionClass(WrapperGenerator.GenerationInfo.Ok genInfo)
     {
         StringBuilder resFile = new();
 
@@ -62,18 +58,23 @@ public static class ConstructGenerationHelper
 
         if (genInfo.NeedsConstructMethod)
         {
+            
             resFile.AppendLine($"""
 
-                {Global.SgAttribute}
-                static global::{genInfo.WrapperType} IConstructableWrapper<global::{genInfo.WrapperType}, global::{genInfo.HandleType}>.Construct(global::{genInfo.HandleType} handle) => new(handle);
-             """);
+                {Constants.SgAttribute}
+            #if NET7_0_OR_GREATER
+                static global::{genInfo.WrapperType} global::{Constants.IConstructableWrapperFullName}<global::{genInfo.WrapperType}, global::{genInfo.HandleType}>.Construct(global::{genInfo.HandleType} handle) => new(handle);
+            #else
+                public static global::{genInfo.WrapperType} Construct(global::{genInfo.HandleType} handle) => new(handle);
+            #endif
+            """);
         }
 
         if (genInfo.NeedsConstructor)
         {
             resFile.AppendLine($"""
 
-                {Global.SgAttribute}
+                {Constants.SgAttribute}
                 {genInfo.ConstructorVisibility} {wrapperType}(global::{genInfo.HandleType} handle) => Handle = handle;
             """);
         }
@@ -82,7 +83,7 @@ public static class ConstructGenerationHelper
         {
             resFile.AppendLine($$"""
 
-                {{Global.SgAttribute}}
+                {{Constants.SgAttribute}}
                 {{genInfo.HandleVisibility}} global::{{genInfo.HandleType}} Handle { get; {{(genInfo.HandleSetVisibility == nameof(MemberVisibility.DoNotGenerate) ? "" : $"{genInfo.HandleSetVisibility} set; ")}}}
             """);
         }
@@ -91,8 +92,8 @@ public static class ConstructGenerationHelper
         {
             resFile.AppendLine($$"""
 
-                {{Global.SgAttribute}}
-                global::{{genInfo.HandleType}} IHasHandle<global::{{genInfo.HandleType}}>.Handle => Handle;
+                {{Constants.SgAttribute}}
+                global::{{genInfo.HandleType}} {{Constants.IHasHandle}}<global::{{genInfo.HandleType}}>.Handle => Handle;
             """);
         }
 

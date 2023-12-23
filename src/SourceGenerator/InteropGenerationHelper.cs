@@ -13,13 +13,8 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 
 public static class InteropGenerationHelper
 {
-    public const string Namespace = $"{nameof(MMKiwi)}.{nameof(CBindingSG)}";
-    public const string MarkerClass = nameof(CbsgWrapperMethodAttribute);
-    public const string HelperClass = nameof(CbsgConstructionHelper);
-    public const string MarkerFullName = $"{Namespace}.{MarkerClass}";
-
     internal static string GenerateExtensionClass(Compilation compilation,
-        IGrouping<TypeDeclarationSyntax, MethodGenerationInfo> classGroup, SourceProductionContext context)
+        IGrouping<TypeDeclarationSyntax, InteropGenerator.MethodGenerationInfo> classGroup, SourceProductionContext context)
     {
         StringBuilder resFile = new();
 
@@ -65,12 +60,12 @@ public static class InteropGenerationHelper
                                  """);
         }
 
-        foreach (MethodGenerationInfo methodInfo in classGroup)
+        foreach (var methodInfo in classGroup)
         {
             var method = methodInfo.Method;
             if (!method.Modifiers.Any(mod => mod.IsKind(SyntaxKind.PartialKeyword)))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Global.Diag02IsNotPartial,
+                context.ReportDiagnostic(Diagnostic.Create(Constants.Diag02IsNotPartial,
                     method.GetLocation(),
                     method.ToDiagString(), "Method"));
                 continue;
@@ -81,11 +76,11 @@ public static class InteropGenerationHelper
 
             if (interopMethod == null)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Global.Diag03CouldNotGenerateWrapper,
+                context.ReportDiagnostic(Diagnostic.Create(Constants.Diag03CouldNotGenerateWrapper,
                     method.GetLocation(),
                     method.ToDiagString()));
                 resFile.AppendLine($$"""
-                                         {{Global.SgAttribute}}
+                                         {{Constants.SgAttribute}}
                                          {{method.Modifiers}} {{method.ReturnType}} {{method.Identifier}}{{method.ParameterList.RemoveAttributes()}}
                                          {
                                              throw new NotImplementedException();
@@ -95,10 +90,10 @@ public static class InteropGenerationHelper
             }
 
             resFile.AppendLine($$"""
-                                     {{Global.SgAttribute}}
+                                     {{Constants.SgAttribute}}
                                      {{method.Modifiers}} {{method.ReturnType}} {{method.Identifier}}{{method.ParameterList.RemoveAttributes()}}
                                      {
-                                 {{GenerateMethod(method, interopMethod)}}
+                                 {{GenerateMethod(method, interopMethod, methodInfo.ErrorMethod)}}
                                      }
                                  """);
         }
@@ -111,7 +106,7 @@ public static class InteropGenerationHelper
         return resFile.ToString();
     }
 
-    private static string GenerateMethod(MethodDeclarationSyntax method, MethodTransformations interopMethod)
+    private static string GenerateMethod(MethodDeclarationSyntax method, MethodTransformations interopMethod, string? errorMethod)
     {
         const string space = "        ";
         StringBuilder methodString = new();
@@ -132,15 +127,17 @@ public static class InteropGenerationHelper
             {
                 if (param.WrapperParam.Type is NullableTypeSyntax)
                 {
-                    methodString.AppendLine(
-                        $"{space}{param.InteropParam.Type} __param_{param.WrapperParam.Identifier} = ({param.WrapperParam.Identifier} as IHasHandle<{param.InteropParam.Type}>)?.Handle ?? {Namespace}.{HelperClass}.GetNullHandle<{param.InteropParam.Type}>();");
+                    methodString.AppendLine($"{space}{param.InteropParam.Type} __param_{param.WrapperParam.Identifier} = ({param.WrapperParam.Identifier} as {Constants.IHasHandle}<{param.InteropParam.Type}>)?.Handle ?? {Constants.Namespace}.{Constants.ConstructHelperClass}.GetNullHandle<{param.InteropParam.Type}>();");
                 }
                 else
                 {
-                    methodString.AppendLine(
-                        $"{space}ArgumentNullException.ThrowIfNull({param.WrapperParam.Identifier});");
-                    methodString.AppendLine(
-                        $"{space}{param.InteropParam.Type} __param_{param.WrapperParam.Identifier} = ((IHasHandle<{param.InteropParam.Type}>){param.WrapperParam.Identifier}).Handle;");
+                    methodString.AppendLine($"#if NET_7_0_OR_GREATER");
+                    methodString.AppendLine($"{space}ArgumentNullException.ThrowIfNull({param.WrapperParam.Identifier});");
+                    methodString.AppendLine($"#else");
+                    methodString.AppendLine($"{space}if({param.WrapperParam.Identifier} is null)");
+                    methodString.AppendLine($"{space}  throw new ArgumentNullException(\"{param.WrapperParam.Identifier}\");");
+                    methodString.AppendLine($"#endif");
+                    methodString.AppendLine($"{space}{param.InteropParam.Type} __param_{param.WrapperParam.Identifier} = (({Constants.IHasHandle}<{param.InteropParam.Type}>){param.WrapperParam.Identifier}).Handle;");
                 }
             }
 
@@ -153,14 +150,18 @@ public static class InteropGenerationHelper
                 if (param.WrapperParam.Type is NullableTypeSyntax)
                 {
                     methodString.AppendLine(
-                        $"{space}{param.InteropParam.Type} __ref_{param.InteropParam.Identifier}_raw = ({param.WrapperParam.Identifier} as IHasHandle<{param.InteropParam.Type}>)?.Handle ?? {Namespace}.{HelperClass}.GetNullHandle<{param.InteropParam.Type}>();");
+                        $"{space}{param.InteropParam.Type} __ref_{param.InteropParam.Identifier}_raw = ({param.WrapperParam.Identifier} as {Constants.IHasHandle}<{param.InteropParam.Type}>)?.Handle ?? {Constants.Namespace}.{Constants.ConstructHelperClass}.GetNullHandle<{param.InteropParam.Type}>();");
                 }
                 else
                 {
+                    methodString.AppendLine($"#if NET_7_0_OR_GREATER");
+                    methodString.AppendLine($"{space}ArgumentNullException.ThrowIfNull({param.WrapperParam.Identifier});");
+                    methodString.AppendLine($"#else");
+                    methodString.AppendLine($"{space}if({param.WrapperParam.Identifier} is null)");
+                    methodString.AppendLine($"{space}  throw new ArgumentNullException(\"{param.WrapperParam.Identifier}\");");
+                    methodString.AppendLine($"#endif");
                     methodString.AppendLine(
-                        $"{space}ArgumentNullException.ThrowIfNull({param.WrapperParam.Identifier});");
-                    methodString.AppendLine(
-                        $"{space}{param.InteropParam.Type} __ref_{param.InteropParam.Identifier}_raw = ((IHasHandle<{param.InteropParam.Type}>){param.WrapperParam.Identifier}).Handle");
+                        $"{space}{param.InteropParam.Type} __ref_{param.InteropParam.Identifier}_raw = (({Constants.IHasHandle}<{param.InteropParam.Type}>){param.WrapperParam.Identifier}).Handle");
                 }
             }
         }
@@ -219,7 +220,8 @@ public static class InteropGenerationHelper
 
         methodString.AppendLine(");");
 
-        methodString.AppendLine($"{space}global::MMKiwi.GdalNet.Handles.GdalError.ThrowIfError();");
+        if (!string.IsNullOrEmpty(errorMethod))
+            methodString.AppendLine($"{space}global::{errorMethod}();");
 
         foreach (var param in interopMethod.Parameters)
         {
@@ -228,12 +230,12 @@ public static class InteropGenerationHelper
                 if (param.WrapperParam.Type is NullableTypeSyntax nts)
                 {
                     methodString.AppendLine(
-                        $"{space}{param.InteropParam.Identifier} =  {Namespace}.{HelperClass}.ConstructNullable<{nts.ElementType}, {param.InteropParam.Type}>(__out_{param.InteropParam.Identifier}_raw);");
+                        $"{space}{param.InteropParam.Identifier} =  {Constants.Namespace}.{Constants.ConstructHelperClass}.ConstructNullable<{nts.ElementType}, {param.InteropParam.Type}>(__out_{param.InteropParam.Identifier}_raw);");
                 }
                 else
                 {
                     methodString.AppendLine(
-                        $"{space}{param.InteropParam.Identifier} =  {Namespace}.{HelperClass}.Construct<{param.WrapperParam.Type}, {param.InteropParam.Type}>(__out_{param.InteropParam.Identifier}_raw);");
+                        $"{space}{param.InteropParam.Identifier} =  {Constants.Namespace}.{Constants.ConstructHelperClass}.Construct<{param.WrapperParam.Type}, {param.InteropParam.Type}>(__out_{param.InteropParam.Identifier}_raw);");
                 }
             }
             else if (param.TransformType == TransformType.WrapperRef)
@@ -241,12 +243,12 @@ public static class InteropGenerationHelper
                 if (param.WrapperParam.Type is NullableTypeSyntax nts)
                 {
                     methodString.AppendLine(
-                        $"{space}{param.InteropParam.Identifier} =  {Namespace}.{HelperClass}.ConstructNullable<{nts.ElementType}, {param.InteropParam.Type}>(__ref_{param.InteropParam.Identifier}_raw);");
+                        $"{space}{param.InteropParam.Identifier} =  {Constants.Namespace}.{Constants.ConstructHelperClass}.ConstructNullable<{nts.ElementType}, {param.InteropParam.Type}>(__ref_{param.InteropParam.Identifier}_raw);");
                 }
                 else
                 {
                     methodString.AppendLine(
-                        $"{space}{param.InteropParam.Identifier} =  {Namespace}.{HelperClass}.Construct<{param.WrapperParam.Type}, {param.InteropParam.Type}>(__ref_{param.InteropParam.Identifier}_raw);");
+                        $"{space}{param.InteropParam.Identifier} =  {Constants.Namespace}.{Constants.ConstructHelperClass}.Construct<{param.WrapperParam.Type}, {param.InteropParam.Type}>(__ref_{param.InteropParam.Identifier}_raw);");
                 }
             }
         }
@@ -260,10 +262,10 @@ public static class InteropGenerationHelper
         {
             if (method.ReturnType is NullableTypeSyntax nts)
                 methodString.AppendLine(
-                    $"{space}__return_value = {Namespace}.{HelperClass}.ConstructNullable<{nts.ElementType}, {interopMethod.InteropMethod.ReturnType}>(__return_value_raw);");
+                    $"{space}__return_value = {Constants.Namespace}.{Constants.ConstructHelperClass}.ConstructNullable<{nts.ElementType}, {interopMethod.InteropMethod.ReturnType}>(__return_value_raw);");
             else
                 methodString.AppendLine(
-                    $"{space}__return_value = {Namespace}.{HelperClass}.Construct<{method.ReturnType}, {interopMethod.InteropMethod.ReturnType}>(__return_value_raw);");
+                    $"{space}__return_value = {Constants.Namespace}.{Constants.ConstructHelperClass}.Construct<{method.ReturnType}, {interopMethod.InteropMethod.ReturnType}>(__return_value_raw);");
             methodString.AppendLine($"{space}return __return_value;");
         }
 
@@ -288,7 +290,7 @@ public static class InteropGenerationHelper
     }
 
     private static MethodTransformations? FindInteropMethod(TypeDeclarationSyntax parentClass,
-        MethodGenerationInfo methodInfo, Compilation compilation, SourceProductionContext context)
+        InteropGenerator.MethodGenerationInfo methodInfo, Compilation compilation, SourceProductionContext context)
     {
         var wrapperMethod = methodInfo.Method;
         //For now, name must be the same. TODO: Add parameter to attribute to override
@@ -303,7 +305,7 @@ public static class InteropGenerationHelper
             if (candidateInterop.ParameterList.Parameters.Count !=
                 wrapperMethod.ParameterList.Parameters.Count)// Parameter count must be the same
             {
-                context.ReportDiagnostic(Diagnostic.Create(Global.Diag04SkipParameters,
+                context.ReportDiagnostic(Diagnostic.Create(Constants.Diag04SkipParameters,
                     wrapperMethod.GetLocation(),
                     wrapperMethod.ToDiagString(),
                     candidateInterop.ToDiagString()));
@@ -312,7 +314,7 @@ public static class InteropGenerationHelper
 
             if (!CheckForLibraryImport(candidateInterop, compilation))// Must have [LibraryImport]
             {
-                context.ReportDiagnostic(Diagnostic.Create(Global.Diag05SkipLibraryImport,
+                context.ReportDiagnostic(Diagnostic.Create(Constants.Diag05SkipLibraryImport,
                     wrapperMethod.GetLocation(),
                     wrapperMethod.ToDiagString(), candidateInterop.ToDiagString()));
                 continue;
@@ -332,7 +334,7 @@ public static class InteropGenerationHelper
                 return new MethodTransformations(candidateInterop, parameters, returnCompatibility);
             }
 
-            context.ReportDiagnostic(Diagnostic.Create(Global.Diag07SkipMatchReturn,
+            context.ReportDiagnostic(Diagnostic.Create(Constants.Diag07SkipMatchReturn,
                 wrapperMethod.GetLocation(),
                 wrapperMethod.ToDiagString(), candidateInterop.ToDiagString()));
             continue;
@@ -343,7 +345,7 @@ public static class InteropGenerationHelper
             {
                 foreach (var invalidParam in invalidParameters)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Global.Diag06SkipParameter,
+                    context.ReportDiagnostic(Diagnostic.Create(Constants.Diag06SkipParameter,
                         wrapperMethod.GetLocation(),
                         wrapperMethod.ToDiagString(), invalidParam.InteropParam.Identifier,
                         candidateInterop.ToDiagString()));
@@ -386,7 +388,7 @@ public static class InteropGenerationHelper
             parent = parent.BaseType;
         }
 
-        foreach (var handleType in wrapperTypeSymbol.Interfaces.Where(i => i.Name is "IConstructableWrapper"))
+        foreach (var handleType in wrapperTypeSymbol.Interfaces.Where(i => i.Name is Constants.IConstructableWrapper))
         {
             if (hierarchy.Contains(handleType.TypeArguments[1]))
             {
@@ -438,7 +440,7 @@ public static class InteropGenerationHelper
             }, interopParam, wrapperParam);
         }
 
-        foreach (var handleType in wrapperTypeSymbol.Interfaces.Where(i => i.Name == "IHasHandle"))
+        foreach (var handleType in wrapperTypeSymbol.Interfaces.Where(i => i.Name == Constants.IHasHandle))
         {
             List<ITypeSymbol> hierarchy =
             [
