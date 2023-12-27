@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
@@ -14,10 +15,29 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 [Generator]
 public class InteropGenerator : IIncrementalGenerator
 {
+    private bool GenerateAll { get; } 
+    public InteropGenerator():this(false)
+    {
+        
+    }
+    public InteropGenerator(bool generateAll)
+    {
+        GenerateAll = generateAll;
+    }
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(ctx 
-            => ctx.AddSource("CbsgConstructionHelper.g.cs", SourceResources.CbsgConstructionHelper));
+            =>
+        {
+            if (GenerateAll)
+            {
+                ctx.AddSource("IConstructableWrapper.g.cs", SourceResources.IConstructableWrapper);
+                ctx.AddSource("IHasHandle.g.cs", SourceResources.IHasHandle);
+                ctx.AddSource("IConstructableHandle.g.cs", SourceResources.IConstructableHandle);
+            }
+            ctx.AddSource("CbsgConstructionHelper.g.cs", SourceResources.CbsgConstructionHelper);
+        });
+        
         
         // Do a simple filter for methods
         IncrementalValuesProvider<MethodGenerationInfo> methodDeclarations = context.SyntaxProvider
@@ -40,8 +60,9 @@ public class InteropGenerator : IIncrementalGenerator
         IMethodSymbol methodSymbol = (IMethodSymbol)context.TargetSymbol;
         MethodDeclarationSyntax methodSyntax = (MethodDeclarationSyntax)context.TargetNode;
 
+        
         string methodName = methodSymbol.Name;
-
+        
         foreach (var attributeData in methodSymbol.GetAttributes()
                      .Where(attributeData =>
                          attributeData.AttributeClass?.Name == Constants.WrapperMarkerClass &&
@@ -59,6 +80,7 @@ public class InteropGenerator : IIncrementalGenerator
 
             return new MethodGenerationInfo(methodSyntax, methodName, errorMethod);
         }
+        
         // we didn't find the attribute we were looking for
         return null;
     }
@@ -107,6 +129,15 @@ public class InteropGenerator : IIncrementalGenerator
             return;
         }
 
+        var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
+        INamespaceSymbol? sysNamespace = semanticModel.LookupNamespacesAndTypes(0,null,"System").OfType<INamespaceSymbol>().FirstOrDefault();
+        ITypeSymbol? argNullException = semanticModel.LookupSymbols(0, sysNamespace, "ArgumentNullException").OfType<INamedTypeSymbol>().FirstOrDefault();
+
+        if (argNullException is null)
+            throw new Exception("Could not find System.ArgumentException class");
+
+        bool hasThrowIfNull = argNullException.GetMembers().Any(m => m.Name == "ThrowIfNull");
+        
         IEnumerable<IGrouping<TypeDeclarationSyntax?, MethodGenerationInfo>> distinctClasses = methods.GroupBy(GetParentClass);
 
         foreach (var cls in distinctClasses)
@@ -123,7 +154,7 @@ public class InteropGenerator : IIncrementalGenerator
             else
             {
                 // generate the source code and add it to the output
-                string result = InteropGenerationHelper.GenerateExtensionClass(compilation, cls!, context);
+                string result = InteropGenerationHelper.GenerateExtensionClass(compilation, cls!, context, hasThrowIfNull);
                 context.AddSource($"InteropGenerator.{cls.Key.ToFullDisplayName()}.g.cs", SourceText.From(result, Encoding.UTF8));
             }
         }

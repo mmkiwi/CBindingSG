@@ -4,11 +4,13 @@
 
 namespace SampleProject.ValidExamples;
 
-public partial class HandleLibraryWrapIn
+#if NET7_0_OR_GREATER
+public partial class InteropLibraryWrapIn
 {
     [LibraryImport("TEST_DLL")]
-    public static partial void TestMethod(FullyGenerated.TestHandle handle);
+    private static partial void TestMethod(FullyGenerated.TestHandle handle);
 
     [CbsgWrapperMethod]
     public static partial void TestMethod(FullyGenerated.TestWrapper wrapper);
 }
+#endif

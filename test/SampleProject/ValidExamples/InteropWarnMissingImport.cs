@@ -4,11 +4,10 @@
 
 namespace SampleProject.ValidExamples;
 
-public partial class HandleDllWrapIn
+public partial class InteropWarnMissingImport
 {
-    [LibraryImport("TEST_DLL")]
-    public static partial void TestMethod(FullyGenerated.TestHandle handle);
-
+    private static partial void TestMethod(int a, string b);
+    
     [CbsgWrapperMethod]
-    public static partial void TestMethod(FullyGenerated.TestWrapper wrapper);
+    public static partial void TestMethod(int a, string b, FullyGenerated.TestWrapper c);
 }

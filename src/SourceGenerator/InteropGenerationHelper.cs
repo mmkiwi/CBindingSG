@@ -14,7 +14,7 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 public static class InteropGenerationHelper
 {
     internal static string GenerateExtensionClass(Compilation compilation,
-        IGrouping<TypeDeclarationSyntax, InteropGenerator.MethodGenerationInfo> classGroup, SourceProductionContext context)
+        IGrouping<TypeDeclarationSyntax, InteropGenerator.MethodGenerationInfo> classGroup, SourceProductionContext context, bool hasThrowIfNull)
     {
         StringBuilder resFile = new();
 
@@ -93,7 +93,7 @@ public static class InteropGenerationHelper
                                      {{Constants.SgAttribute}}
                                      {{method.Modifiers}} {{method.ReturnType}} {{method.Identifier}}{{method.ParameterList.RemoveAttributes()}}
                                      {
-                                 {{GenerateMethod(method, interopMethod, methodInfo.ErrorMethod)}}
+                                 {{GenerateMethod(method, interopMethod, methodInfo.ErrorMethod, hasThrowIfNull)}}
                                      }
                                  """);
         }
@@ -106,7 +106,7 @@ public static class InteropGenerationHelper
         return resFile.ToString();
     }
 
-    private static string GenerateMethod(MethodDeclarationSyntax method, MethodTransformations interopMethod, string? errorMethod)
+    private static string GenerateMethod(MethodDeclarationSyntax method, MethodTransformations interopMethod, string? errorMethod, bool hasThrowIfNull)
     {
         const string space = "        ";
         StringBuilder methodString = new();
@@ -131,16 +131,18 @@ public static class InteropGenerationHelper
                 }
                 else
                 {
-                    methodString.AppendLine($"#if NET_7_0_OR_GREATER");
-                    methodString.AppendLine($"{space}ArgumentNullException.ThrowIfNull({param.WrapperParam.Identifier});");
-                    methodString.AppendLine($"#else");
-                    methodString.AppendLine($"{space}if({param.WrapperParam.Identifier} is null)");
-                    methodString.AppendLine($"{space}  throw new ArgumentNullException(\"{param.WrapperParam.Identifier}\");");
-                    methodString.AppendLine($"#endif");
+                    if (hasThrowIfNull)
+                    {
+                        methodString.AppendLine($"{space}ArgumentNullException.ThrowIfNull({param.WrapperParam.Identifier});");
+                    }
+                    else
+                    {
+                        methodString.AppendLine($"{space}if({param.WrapperParam.Identifier} is null)");
+                        methodString.AppendLine($"{space}  throw new ArgumentNullException(\"{param.WrapperParam.Identifier}\");");
+                    }
                     methodString.AppendLine($"{space}{param.InteropParam.Type} __param_{param.WrapperParam.Identifier} = (({Constants.IHasHandle}<{param.InteropParam.Type}>){param.WrapperParam.Identifier}).Handle;");
                 }
             }
-
             else if (param.TransformType == TransformType.WrapperOut)
             {
                 methodString.AppendLine($"{space}{param.InteropParam.Type} __out_{param.InteropParam.Identifier}_raw;");
@@ -154,12 +156,15 @@ public static class InteropGenerationHelper
                 }
                 else
                 {
-                    methodString.AppendLine($"#if NET_7_0_OR_GREATER");
-                    methodString.AppendLine($"{space}ArgumentNullException.ThrowIfNull({param.WrapperParam.Identifier});");
-                    methodString.AppendLine($"#else");
-                    methodString.AppendLine($"{space}if({param.WrapperParam.Identifier} is null)");
-                    methodString.AppendLine($"{space}  throw new ArgumentNullException(\"{param.WrapperParam.Identifier}\");");
-                    methodString.AppendLine($"#endif");
+                    if (hasThrowIfNull)
+                    {
+                        methodString.AppendLine($"{space}ArgumentNullException.ThrowIfNull({param.WrapperParam.Identifier});");
+                    }
+                    else
+                    {
+                        methodString.AppendLine($"{space}if({param.WrapperParam.Identifier} is null)");
+                        methodString.AppendLine($"{space}  throw new ArgumentNullException(\"{param.WrapperParam.Identifier}\");");
+                    }
                     methodString.AppendLine(
                         $"{space}{param.InteropParam.Type} __ref_{param.InteropParam.Identifier}_raw = (({Constants.IHasHandle}<{param.InteropParam.Type}>){param.WrapperParam.Identifier}).Handle");
                 }
