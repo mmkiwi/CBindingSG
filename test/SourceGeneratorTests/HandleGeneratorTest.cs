@@ -23,20 +23,19 @@ public class HandleGeneratorTest
         this.output = output;
     }
 
-    [Theory]
-    [ClassData(typeof(TargetFrameworks))]
-    public Task Driver(TargetFramework f)
+    [Fact]
+    public Task Driver()
     {
-        var driver = GeneratorDriver([], f).OutputDiagnostics(output);
+        var driver = GeneratorDriver(default, []).OutputDiagnostics(output);
 
-        return Verify(driver).UseDirectory($"snapshots").UseParameters(f);
+        return Verify(driver).UseDirectory("snapshots");
     }
 
     [Theory]
     [ClassData(typeof(TargetFrameworks))]
     public Task RunResults(TargetFramework f)
     {
-        var driver = GeneratorDriver([], f).OutputDiagnostics(output);
+        var driver = GeneratorDriver(f, []).OutputDiagnostics(output);
 
         var runResults = driver.GetRunResult();
         return Verify(runResults).UseDirectory($"snapshots").UseParameters(f);
@@ -49,9 +48,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleErrorNotPartial", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
 
@@ -64,9 +63,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleNotSealedOrAbstract", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -78,9 +77,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleNoBase", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -92,9 +91,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleHasConstructor", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -106,9 +105,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleDoNotGenerateDoesntOwn", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -120,9 +119,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleDoNotGenerateOwns", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -134,9 +133,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleHasOwns", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -148,9 +147,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleHasDoesntOwn", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -162,9 +161,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleHasPrimaryConstructor", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -176,9 +175,9 @@ public class HandleGeneratorTest
     {
         SyntaxTree source = Helpers.GetResource("HandleHasExtraneousConstructor", f);
 
-        var driver = GeneratorDriver([
+        var driver = GeneratorDriver(f, [
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
-        ], f).OutputDiagnostics(output);
+        ]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
@@ -197,13 +196,13 @@ public class HandleGeneratorTest
               """);
 
         SyntaxTree source = Helpers.GetResource("HandleConstructorVisibility", f);
-        var driver = GeneratorDriver([Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), constantSource, source], f).OutputDiagnostics(output);
+        var driver = GeneratorDriver(f, [Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), constantSource, source]).OutputDiagnostics(output);
 
         var runResult = driver.GetRunResult().Results.Single();
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f, memberVisibility);
     }
 
-    static (GeneratorDriver, Compilation) GeneratorDriver(ImmutableArray<SyntaxTree> trees, TargetFramework f)
+    static (GeneratorDriver, Compilation) GeneratorDriver(TargetFramework f, ImmutableArray<SyntaxTree> trees)
     {
         var frameworkReferences = f switch
         {

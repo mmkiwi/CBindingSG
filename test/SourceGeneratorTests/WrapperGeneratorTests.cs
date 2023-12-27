@@ -25,13 +25,12 @@ public class WrapperGeneratorTests
         this.output = output;
     }
 
-    [Theory]
-    [ClassData(typeof(TargetFrameworks))]
-    public Task Driver(TargetFramework f)
+    [Fact]
+    public Task Driver()
     {
-        var driver = GeneratorDriver(f, []).OutputDiagnostics(output);
+        var driver = GeneratorDriver(default, []).OutputDiagnostics(output);
 
-        return Verify(driver).UseDirectory($"snapshots").UseParameters(f);
+        return Verify(driver).UseDirectory($"snapshots");
     }
 
     [Theory]
