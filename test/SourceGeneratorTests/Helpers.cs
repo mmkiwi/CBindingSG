@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.Versioning;
 
@@ -44,8 +45,13 @@ internal static class Helpers
                                                                   """ + TestResources.ResourceManager.GetString("Global")!);
 
     public static SyntaxTree TestHandleBase(TargetFramework f) => GetResource("TestHandleBase", f);
+    public static SyntaxTree TestHandle(TargetFramework f) => GetResource("TestHandle", f);
+
     public static SyntaxTree TestError => GetResource("TestError", TargetFramework.Net80);
+    public static SyntaxTree TestWrapper(TargetFramework f) => GetResource("TestWrapper", f);
+
     public static SyntaxTree SampleHandles => GetResource("SampleHandles", TargetFramework.Net80);
 
     public static SyntaxTree GetResource(string key, TargetFramework f) => CSharpSyntaxTree.ParseText(TestResources.ResourceManager.GetString(key)!, options:new CSharpParseOptions(preprocessorSymbols: f.ToPreprocessor()));
+    public static ImmutableArray<string> ExcludedResults => ["IConstructableWrapper.g.cs", "IHasHandle.g.cs", "IConstructableHandle.g.cs", "CbsgConstructionHelper.g.cs"];
 }

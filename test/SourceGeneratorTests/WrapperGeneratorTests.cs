@@ -39,7 +39,7 @@ public class WrapperGeneratorTests
     {
         var driver = GeneratorDriver(f, []).OutputDiagnostics(output);
 
-        var runResults = driver.GetRunResult().Results.SingleOrDefault();
+        var runResults = driver.GetRunResult();
         return Verify(runResults).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -53,7 +53,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -67,7 +67,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        GeneratorRunResult runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -81,7 +81,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -95,7 +95,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
     
@@ -109,7 +109,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -124,7 +124,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -138,7 +138,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -152,7 +152,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -166,7 +166,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -187,7 +187,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, constantSource, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f, memberVisibility);
     }
 
@@ -208,7 +208,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, constantSource, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f, memberVisibility);
     }
 
@@ -229,7 +229,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, constantSource, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f, memberVisibility);
     }
 
@@ -242,7 +242,7 @@ public class WrapperGeneratorTests
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 

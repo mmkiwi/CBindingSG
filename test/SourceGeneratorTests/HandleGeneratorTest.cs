@@ -52,7 +52,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
 
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
@@ -67,7 +67,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -81,7 +81,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -95,7 +95,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -109,7 +109,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -123,7 +123,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -137,7 +137,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -151,7 +151,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -165,7 +165,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -179,7 +179,7 @@ public class HandleGeneratorTest
             Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), source
         ]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
@@ -198,7 +198,7 @@ public class HandleGeneratorTest
         SyntaxTree source = Helpers.GetResource("HandleConstructorVisibility", f);
         var driver = GeneratorDriver(f, [Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), constantSource, source]).OutputDiagnostics(output);
 
-        var runResult = driver.GetRunResult().Results.Single();
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f, memberVisibility);
     }
 
