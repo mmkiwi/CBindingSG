@@ -62,11 +62,6 @@
             <![CDATA[..\SampleProject\InvalidExamples\HandleHasExtraneousConstructor.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-    <data name="HandleHasExtraneousConstructor" type="System.Resources.ResXFileRef, System.Windows.Forms">
-        <value>
-            <![CDATA[..\SampleProject\InvalidExamples\HandleHasExtraneousConstructor.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
-        </value>
-    </data>
     <data name="HandleDoNotGenerateOwns" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\ValidExamples\HandleDoNotGenerateOwns.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
@@ -92,7 +87,7 @@
             <![CDATA[..\SampleProject\SampleHandles.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-      <data name="WrapperDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <data name="WrapperDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
             <![CDATA[..\SampleProject\ValidExamples\WrapperDefault.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
@@ -162,14 +157,109 @@
             <![CDATA[..\SampleProject\FullyGenerated\TestWrapper.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-    <data name="HandleLibraryWrapIn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <data name="InteropLibraryWrap" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
-            <![CDATA[..\SampleProject\ValidExamples\HandleLibraryWrapIn.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+            <![CDATA[..\SampleProject\ValidExamples\InteropLibraryWrap.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
-    <data name="HandleDllWrapIn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <data name="InteropDllWrap" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>
-            <![CDATA[..\SampleProject\ValidExamples\HandleDllWrapIn.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+            <![CDATA[..\SampleProject\ValidExamples\InteropDllWrap.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropDifferentName" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropDifferentName.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropScalarParameters" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropScalarParameters.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropScalarReturn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropScalarReturn.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropWarnNoMatch" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropWarnNoMatch.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropErrorNoParent" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\InvalidExamples\InteropErrorNoParent.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropRefParameters" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropRefParameters.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropInParameters" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropInParameters.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropOutParameters" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropOutParameters.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropWarnWrongNum" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropWarnWrongNum.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropWarnMissingImport" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropWarnMissingImport.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropWarnParamType" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropWarnParamType.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropWarnReturn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropWarnReturn.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropHasAttributes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropHasAttributes.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropErrorMethod" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropErrorMethod.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropWrapperReturn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropWrapperReturn.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropWarnNotPartial" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropWarnNotPartial.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropNullableParameters" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropNullableParameters.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="InteropNullableReturn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\InteropNullableReturn.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
+        </value>
+    </data>
+    <data name="WrapperNotConstructable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>
+            <![CDATA[..\SampleProject\ValidExamples\WrapperNotConstructable.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8]]>
         </value>
     </data>
 </root>

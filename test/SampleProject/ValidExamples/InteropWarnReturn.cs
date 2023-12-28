@@ -8,18 +8,15 @@ public partial class InteropWarnReturn
 {
 #if NET7_0_OR_GREATER
     [LibraryImport("TEST_DLL", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial void TestMethod(int a, char b, FullyGenerated.TestHandle c);
-    
-    [LibraryImport("TEST_DLL", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial void TestMethod(int a, string b, FullyGenerated.TestHandleBase c);
+    private static partial void TestMethod(int a, string b, FullyGenerated.TestHandle c);
 #else
     [DllImport("TEST_DLL")]
-    private static extern void TestMethod(int a, char b, FullyGenerated.TestHandle c);
-
-    [DllImport("TEST_DLL")]
-    private static extern void TestMethod(int a, string b, FullyGenerated.TestHandleBase c);
+    private static extern void TestMethod(int a, string b, FullyGenerated.TestHandle c);
 #endif
 
     [CbsgWrapperMethod]
-    public static partial void TestMethod(int a, string b, FullyGenerated.TestWrapper c);
+    public static partial int TestMethod(int a, string b, FullyGenerated.TestWrapper c);
+    
+    [CbsgWrapperMethod(MethodName = nameof(TestMethod))]
+    public static partial FullyGenerated.TestWrapper TestMethod2(int a, string b, FullyGenerated.TestWrapper c);
 }

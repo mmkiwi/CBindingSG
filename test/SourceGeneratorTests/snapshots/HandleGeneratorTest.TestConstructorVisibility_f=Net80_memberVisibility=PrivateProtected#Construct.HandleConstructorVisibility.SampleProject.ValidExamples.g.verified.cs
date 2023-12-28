@@ -9,10 +9,26 @@ internal abstract partial class HandleConstructorVisibility
     static HandleConstructorVisibility IConstructableHandle<HandleConstructorVisibility>.Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
     
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
-    public class Owns() : HandleConstructorVisibility(true);
+    public class Owns() : HandleConstructorVisibility(true), MMKiwi.CBindingSG.IConstructableHandle<Owns>
+    {
+        static Owns MMKiwi.CBindingSG.IConstructableHandle<Owns>.Construct(bool ownsHandle)
+        {
+           if(!ownsHandle)
+               throw new InvalidOperationException("Cannot construct Owns that does not own handle");
+           return new();
+        }
+    }
     
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
-    public class DoesntOwn() : HandleConstructorVisibility(false);
+    public class DoesntOwn() : HandleConstructorVisibility(false), MMKiwi.CBindingSG.IConstructableHandle<DoesntOwn>
+    {
+        static DoesntOwn MMKiwi.CBindingSG.IConstructableHandle<DoesntOwn>.Construct(bool ownsHandle)
+        {
+           if(ownsHandle)
+               throw new InvalidOperationException("Cannot construct DoesntOwn that owns handle");
+           return new();
+        }
+    }
 
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
     private protected HandleConstructorVisibility(bool ownsHandle): base(ownsHandle) { }

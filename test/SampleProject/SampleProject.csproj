@@ -7,6 +7,10 @@
         <LangVersion>12.0</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <IsPackable>false</IsPackable>
+        <AssemblyVersion>0.0.9</AssemblyVersion>
+        <FileVersion>$(AssemblyVersion)</FileVersion>
+        <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
 
     <ItemGroup>

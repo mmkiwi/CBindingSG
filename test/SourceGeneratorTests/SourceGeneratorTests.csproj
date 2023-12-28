@@ -9,6 +9,9 @@
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
         <LangVersion>12</LangVersion>
+        <AssemblyVersion>0.1.0</AssemblyVersion>
+        <FileVersion>$(AssemblyVersion)</FileVersion>
+        <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
 
     <ItemGroup>
@@ -172,5 +175,10 @@
         <DependentUpon>TestResources.resx</DependentUpon>
       </Compile>
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <PackageReference Include="NetEscapades.EnumGenerators" Version="1.0.0-beta08" ReferenceOutputAssembly="false">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
 </Project>

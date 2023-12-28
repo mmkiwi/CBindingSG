@@ -6,6 +6,9 @@ namespace SampleProject.ValidExamples;
 
 public partial class InteropWarnNoMatch
 {
+    [DllImport("TEST_DLL")]
+    private static extern void TestMethoood(FullyGenerated.TestHandle handle);
+    
     [CbsgWrapperMethod()]
     public static partial void TestMethod(int a, string b, byte c);
 }

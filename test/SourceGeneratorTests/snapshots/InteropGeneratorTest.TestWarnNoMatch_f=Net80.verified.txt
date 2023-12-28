@@ -1,0 +1,14 @@
+{
+  Diagnostics: [
+    {
+      Id: CBSG0003,
+      Title: Could not generate wrapper method,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (11,4)-(12,67),
+      MessageFormat: Could not generate wrapper method for {0}.,
+      Message: Could not generate wrapper method for TestMethod(int,string,byte).,
+      Category: CBindingSourceGenerator
+    }
+  ]
+}

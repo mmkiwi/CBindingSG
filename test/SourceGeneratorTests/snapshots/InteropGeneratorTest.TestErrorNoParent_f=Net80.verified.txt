@@ -1,0 +1,14 @@
+{
+  Diagnostics: [
+    {
+      Id: CBSG0001,
+      Title: Could not generate method,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (4,0)-(5,74),
+      MessageFormat: Could not generate wrapper method for {0} because the parent class could not be found,
+      Message: Could not generate wrapper method for TestMethod(FullyGenerated.TestWrapper) because the parent class could not be found,
+      Category: CBindingSourceGenerator
+    }
+  ]
+}

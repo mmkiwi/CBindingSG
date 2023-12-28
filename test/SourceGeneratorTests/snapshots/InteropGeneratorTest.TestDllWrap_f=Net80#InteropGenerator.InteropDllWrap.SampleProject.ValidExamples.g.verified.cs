@@ -1,7 +1,7 @@
-//HintName: InteropGenerator.HandleDllWrapIn.SampleProject.ValidExamples.g.cs
+//HintName: InteropGenerator.InteropDllWrap.SampleProject.ValidExamples.g.cs
 #nullable enable
 namespace SampleProject.ValidExamples {
-public partial class HandleDllWrapIn
+public partial class InteropDllWrap
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
     public static partial void TestMethod(FullyGenerated.TestWrapper wrapper)

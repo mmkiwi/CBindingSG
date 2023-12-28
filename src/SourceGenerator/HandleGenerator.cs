@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -17,9 +18,6 @@ public class HandleGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(ctx 
-            => ctx.AddSource("IConstructableHandle.g.cs", SourceResources.IConstructableHandle));
-        
         // Do a simple filter for methods
         IncrementalValuesProvider<GenerationInfo> methodDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(
@@ -246,6 +244,7 @@ public class HandleGenerator : IIncrementalGenerator
     {
         public required ClassDeclarationSyntax ClassSymbol { get; init; }
 
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
             return ClassSymbol.GetHashCode();
@@ -255,9 +254,11 @@ public class HandleGenerator : IIncrementalGenerator
         {
             public new static ClassNameEqualityComparer Default => new();
 
+            [ExcludeFromCodeCoverage]
             public override bool Equals(GenerationInfo x, GenerationInfo y) =>
                 x.ClassSymbol.ToFullDisplayName() == y.ClassSymbol.ToFullDisplayName();
 
+            [ExcludeFromCodeCoverage]
             public override int GetHashCode(GenerationInfo obj) => obj.ClassSymbol.ToFullDisplayName().GetHashCode();
         }
 

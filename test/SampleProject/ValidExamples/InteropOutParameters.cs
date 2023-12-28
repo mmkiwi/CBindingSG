@@ -8,10 +8,10 @@ public partial class InteropOutParameters
 {
 #if NET7_0_OR_GREATER 
     [LibraryImport("TEST_DLL", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial void TestMethod(out int a, out FullyGenerated.TestHandle handle);
+    private static partial void TestMethod(out int a, out FullyGenerated.TestHandle.Owns handle);
 #else
     [DllImport("TEST_DLL")]
-    private static extern void TestMethod(out int a, out FullyGenerated.TestHandle handle);
+    private static extern void TestMethod(out int a, out FullyGenerated.TestHandle.Owns handle);
 #endif
 
     [CbsgWrapperMethod()]

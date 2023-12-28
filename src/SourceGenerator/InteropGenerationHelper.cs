@@ -3,6 +3,8 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -123,7 +125,7 @@ public static class InteropGenerationHelper
 
         foreach (var param in interopMethod.Parameters)
         {
-            if (param.TransformType == TransformType.WrapperIn)
+            if (param.TransformType is TransformType.WrapperIn or TransformType.WrapperExplicitIn)
             {
                 if (param.WrapperParam.Type is NullableTypeSyntax)
                 {
@@ -166,7 +168,7 @@ public static class InteropGenerationHelper
                         methodString.AppendLine($"{space}  throw new ArgumentNullException(\"{param.WrapperParam.Identifier}\");");
                     }
                     methodString.AppendLine(
-                        $"{space}{param.InteropParam.Type} __ref_{param.InteropParam.Identifier}_raw = (({Constants.IHasHandle}<{param.InteropParam.Type}>){param.WrapperParam.Identifier}).Handle");
+                        $"{space}{param.InteropParam.Type} __ref_{param.InteropParam.Identifier}_raw = (({Constants.IHasHandle}<{param.InteropParam.Type}>){param.WrapperParam.Identifier}).Handle;");
                 }
             }
         }
@@ -196,6 +198,10 @@ public static class InteropGenerationHelper
             if (param.TransformType == TransformType.WrapperIn)
             {
                 methodString.Append($"__param_{param.WrapperParam.Identifier}");
+            }
+            if (param.TransformType == TransformType.WrapperExplicitIn)
+            {
+                methodString.Append($"in __param_{param.WrapperParam.Identifier}");
             }
             else if (param.TransformType == TransformType.Direct)
             {
@@ -423,14 +429,11 @@ public static class InteropGenerationHelper
     private static ParameterCompatibility CheckParameterCompatibility(ParameterSyntax wrapperParam,
         ParameterSyntax interopParam, Compilation compilation)
     {
-        if (wrapperParam.Type is null || interopParam.Type is null)
-            return new(TransformType.Invalid, interopParam, wrapperParam);
-
-        if (compilation.GetSemanticModel(wrapperParam.Type.SyntaxTree, true).GetSymbolInfo(wrapperParam.Type).Symbol is
+        if (compilation.GetSemanticModel(wrapperParam.Type!.SyntaxTree, true).GetSymbolInfo(wrapperParam.Type).Symbol is
             not ITypeSymbol wrapperTypeSymbol)
             return new(TransformType.Invalid, interopParam, wrapperParam);
 
-        if (compilation.GetSemanticModel(interopParam.Type.SyntaxTree, true).GetSymbolInfo(interopParam.Type).Symbol is
+        if (compilation.GetSemanticModel(interopParam.Type!.SyntaxTree, true).GetSymbolInfo(interopParam.Type).Symbol is
             not ITypeSymbol interopTypeSymbol)
             return new(TransformType.Invalid, interopParam, wrapperParam);
 
@@ -467,6 +470,8 @@ public static class InteropGenerationHelper
                         wrapperParam),
                     [{ RawKind: (int)SyntaxKind.OutKeyword }] => new(TransformType.WrapperOut, interopParam,
                         wrapperParam),
+                    [{ RawKind: (int)SyntaxKind.InKeyword }] => new(TransformType.WrapperExplicitIn, interopParam,
+                        wrapperParam),
                     _ => new(TransformType.WrapperIn, interopParam, wrapperParam)
                 };
             }
@@ -475,11 +480,13 @@ public static class InteropGenerationHelper
         return new(TransformType.Invalid, interopParam, wrapperParam);
     }
 
+    [ExcludeFromCodeCoverage]
     private record MethodTransformations(
         MethodDeclarationSyntax InteropMethod,
         ImmutableArray<ParameterCompatibility> Parameters,
         TransformType Return);
 
+    [ExcludeFromCodeCoverage]
     private record ParameterCompatibility(
         TransformType TransformType,
         ParameterSyntax InteropParam,
@@ -495,6 +502,7 @@ public static class InteropGenerationHelper
         DirectRef,
         WrapperIn,
         WrapperRef,
-        WrapperOut
+        WrapperOut,
+        WrapperExplicitIn
     }
 }

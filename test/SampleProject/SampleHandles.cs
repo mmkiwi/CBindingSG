@@ -12,6 +12,6 @@ public abstract class SampleHandle(bool ownsHandle) : SafeHandleMinusOneIsInvali
 
 [CbsgGenerateHandle]
 [CbsgNeverOwns]
-public abstract partial class SampleHandleNeverOwns : SampleHandle
+public partial class SampleHandleNeverOwns() : SampleHandle(false)
 {
 }

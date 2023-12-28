@@ -5,7 +5,7 @@
 namespace SampleProject.ValidExamples;
 
 #if NET7_0_OR_GREATER
-public partial class InteropLibraryWrapIn
+public partial class InteropLibraryWrap
 {
     [LibraryImport("TEST_DLL")]
     private static partial void TestMethod(FullyGenerated.TestHandle handle);

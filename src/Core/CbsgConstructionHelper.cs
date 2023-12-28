@@ -2,18 +2,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#if !CBSG_OMITINTERNAL
+#if !CBSG_OMITHELPER && !CBSG_OMITALL
 #nullable enable
 using System.Reflection;
 
 namespace MMKiwi.CBindingSG;
 
-internal static class CbsgConstructionHelper
+public static class CbsgConstructionHelper
 {
 #if NET7_0_OR_GREATER
     public static TRes Construct<TRes, THandle>(THandle handle)
         where TRes : class, IConstructableWrapper<TRes, THandle>
-        where THandle : SafeHandle
+        where THandle : global::System.Runtime.InteropServices.SafeHandle
     {
         return handle.IsInvalid
             ? throw new InvalidOperationException("Cannot marshal null handle")
@@ -22,20 +22,20 @@ internal static class CbsgConstructionHelper
 
     public static TRes? ConstructNullable<TRes, THandle>(THandle handle)
         where TRes : class, IConstructableWrapper<TRes, THandle>
-        where THandle : SafeHandle
+        where THandle : global::System.Runtime.InteropServices.SafeHandle
     {
         return handle.IsInvalid ? null : TRes.Construct(handle);
     }
 
     public static THandle GetNullHandle<THandle>()
-        where THandle : SafeHandle, IConstructableHandle<THandle>
+        where THandle : global::System.Runtime.InteropServices.SafeHandle, IConstructableHandle<THandle>
     {
         return THandle.Construct(false);
     }
 #else
     public static TRes Construct<TRes, THandle>(THandle handle)
         where TRes : class, IConstructableWrapper<TRes, THandle>
-        where THandle : SafeHandle
+        where THandle : global::System.Runtime.InteropServices.SafeHandle
     {
         var constructMethod = FindWrapperConstructMethod<TRes, THandle>();
         
@@ -46,20 +46,20 @@ internal static class CbsgConstructionHelper
 
     public static TRes? ConstructNullable<TRes, THandle>(THandle handle)
         where TRes : class, IConstructableWrapper<TRes, THandle>
-        where THandle : SafeHandle
+        where THandle : global::System.Runtime.InteropServices.SafeHandle
     {
         var constructMethod = FindWrapperConstructMethod<TRes, THandle>();
 
         return handle.IsInvalid ? null : (TRes)constructMethod.Invoke(null, [handle]);
     }
     public static THandle GetNullHandle<THandle>()
-        where THandle : SafeHandle, IConstructableHandle<THandle>
+        where THandle : global::System.Runtime.InteropServices.SafeHandle, IConstructableHandle<THandle>
     {
         return (THandle)FindHandleConstructMethod<THandle>().Invoke(null, [false]);
     }
     
     private static MethodInfo FindHandleConstructMethod<THandle>()
-        where THandle : SafeHandle, IConstructableHandle<THandle>
+        where THandle : global::System.Runtime.InteropServices.SafeHandle, IConstructableHandle<THandle>
     {
         // .NET before 7 can't use static abstract interface members so we have to use reflection.
         var constructMethod = typeof(THandle).GetMethod("Construct", BindingFlags.Static | BindingFlags.Public, null, [typeof(bool)], null);
@@ -71,7 +71,7 @@ internal static class CbsgConstructionHelper
     
     private static MethodInfo FindWrapperConstructMethod<TRes, THandle>()
         where TRes : class, IConstructableWrapper<TRes, THandle> 
-        where THandle : SafeHandle
+        where THandle : global::System.Runtime.InteropServices.SafeHandle
     {
         // .NET before 7 can't use static abstract interface members so we have to use reflection.
         var constructMethod = typeof(TRes).GetMethod("Construct", BindingFlags.Static | BindingFlags.Public, null, [typeof(THandle)], null);

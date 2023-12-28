@@ -6,13 +6,13 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MMKiwi.CBindingSG;
 
-#if !CBSG_OMITINTERNAL
+#if !CBSG_OMITWRAPPER && !CBSG_OMITALL
 #nullable enable
 
 #if !NET7_0_OR_GREATER
 [SuppressMessage("ReSharper", "UnusedTypeParameter", Justification = "Type arguments needed for static methods")]
 #endif
-internal interface IConstructableWrapper<out TRes, in THandle> where THandle : SafeHandle
+public interface IConstructableWrapper<out TRes, in THandle> where THandle : global::System.Runtime.InteropServices.SafeHandle
 {
 #if NET7_0_OR_GREATER
     public static abstract TRes Construct(THandle handle);

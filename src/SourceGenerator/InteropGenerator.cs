@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -15,10 +16,10 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 [Generator]
 public class InteropGenerator : IIncrementalGenerator
 {
-    private bool GenerateAll { get; } 
-    public InteropGenerator():this(false)
+    private bool GenerateAll { get; }
+    public InteropGenerator() : this(false)
     {
-        
+
     }
     public InteropGenerator(bool generateAll)
     {
@@ -26,19 +27,8 @@ public class InteropGenerator : IIncrementalGenerator
     }
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(ctx 
-            =>
-        {
-            if (GenerateAll)
-            {
-                ctx.AddSource("IConstructableWrapper.g.cs", SourceResources.IConstructableWrapper);
-                ctx.AddSource("IHasHandle.g.cs", SourceResources.IHasHandle);
-                ctx.AddSource("IConstructableHandle.g.cs", SourceResources.IConstructableHandle);
-            }
-            ctx.AddSource("CbsgConstructionHelper.g.cs", SourceResources.CbsgConstructionHelper);
-        });
-        
-        
+
+
         // Do a simple filter for methods
         IncrementalValuesProvider<MethodGenerationInfo> methodDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(Constants.WrapperMarkerFullName,
@@ -60,29 +50,23 @@ public class InteropGenerator : IIncrementalGenerator
         IMethodSymbol methodSymbol = (IMethodSymbol)context.TargetSymbol;
         MethodDeclarationSyntax methodSyntax = (MethodDeclarationSyntax)context.TargetNode;
 
-        
+        // There will only be one
+        var attributeData = context.Attributes.First();
+
         string methodName = methodSymbol.Name;
-        
-        foreach (var attributeData in methodSymbol.GetAttributes()
-                     .Where(attributeData =>
-                         attributeData.AttributeClass?.Name == Constants.WrapperMarkerClass &&
-                         attributeData.AttributeClass.ToDisplayString() == Constants.WrapperMarkerFullName))
+
+        foreach (KeyValuePair<string, TypedConstant> namedArgument in attributeData.NamedArguments)
         {
-            foreach (KeyValuePair<string, TypedConstant> namedArgument in attributeData.NamedArguments)
+            if (namedArgument.Key == "MethodName" && namedArgument.Value.Value?.ToString() is { } ns)
             {
-                if (namedArgument.Key == "MethodName" && namedArgument.Value.Value?.ToString() is { } ns)
-                {
-                    methodName = ns;
-                }
+                methodName = ns;
             }
-
-            string? errorMethod = FindErrorMethod(methodSymbol);
-
-            return new MethodGenerationInfo(methodSyntax, methodName, errorMethod);
         }
-        
-        // we didn't find the attribute we were looking for
-        return null;
+
+        string? errorMethod = FindErrorMethod(methodSymbol);
+
+        return new MethodGenerationInfo(methodSyntax, methodName, errorMethod);
+
     }
     private static string? FindErrorMethod(IMethodSymbol methodSymbol)
     {
@@ -106,7 +90,7 @@ public class InteropGenerator : IIncrementalGenerator
                     && attribute.ConstructorArguments is
                     [
                         { Kind: TypedConstantKind.Type },
-                        { Kind: TypedConstantKind.Primitive, Type: {SpecialType: SpecialType.System_String} }
+                        { Kind: TypedConstantKind.Primitive, Type: { SpecialType: SpecialType.System_String } }
                     ])
                 {
                     INamedTypeSymbol typeArg = (INamedTypeSymbol)attribute.ConstructorArguments[0].Value!;
@@ -130,14 +114,14 @@ public class InteropGenerator : IIncrementalGenerator
         }
 
         var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
-        INamespaceSymbol? sysNamespace = semanticModel.LookupNamespacesAndTypes(0,null,"System").OfType<INamespaceSymbol>().FirstOrDefault();
+        INamespaceSymbol? sysNamespace = semanticModel.LookupNamespacesAndTypes(0, null, "System").OfType<INamespaceSymbol>().FirstOrDefault();
         ITypeSymbol? argNullException = semanticModel.LookupSymbols(0, sysNamespace, "ArgumentNullException").OfType<INamedTypeSymbol>().FirstOrDefault();
 
-        if (argNullException is null)
-            throw new Exception("Could not find System.ArgumentException class");
+        CheckForArgNull(argNullException);
+
 
         bool hasThrowIfNull = argNullException.GetMembers().Any(m => m.Name == "ThrowIfNull");
-        
+
         IEnumerable<IGrouping<TypeDeclarationSyntax?, MethodGenerationInfo>> distinctClasses = methods.GroupBy(GetParentClass);
 
         foreach (var cls in distinctClasses)
@@ -161,6 +145,14 @@ public class InteropGenerator : IIncrementalGenerator
 
         return;
 
+        [ExcludeFromCodeCoverage]
+        void CheckForArgNull([NotNull] ITypeSymbol? t)
+        {
+            // This should never be true unless the .net runtime isn't referenced at all
+            if (t is null)
+                throw new Exception("Could not find System.ArgumentException class");
+        }
+
         static TypeDeclarationSyntax? GetParentClass(MethodGenerationInfo method)
         {
             var parent = method.Method.Parent;
@@ -175,5 +167,6 @@ public class InteropGenerator : IIncrementalGenerator
     }
 
 
+    [ExcludeFromCodeCoverage]
     public record MethodGenerationInfo(MethodDeclarationSyntax Method, string TargetName, string? ErrorMethod);
 }

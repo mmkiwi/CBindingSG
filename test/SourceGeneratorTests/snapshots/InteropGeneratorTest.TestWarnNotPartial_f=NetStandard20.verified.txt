@@ -1,0 +1,14 @@
+{
+  Diagnostics: [
+    {
+      Id: CBSG0002,
+      Title: Method must be partial,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (16,4)-(17,84),
+      MessageFormat: {1} must be partial {0},
+      Message: Method must be partial TestMethod(int,string,FullyGenerated.TestWrapper),
+      Category: CBindingSourceGenerator
+    }
+  ]
+}

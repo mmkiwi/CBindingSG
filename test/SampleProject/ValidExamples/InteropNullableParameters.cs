@@ -7,13 +7,32 @@ namespace SampleProject.ValidExamples;
 public partial class InteropNullableParameters
 {
 #if NET7_0_OR_GREATER 
-    [LibraryImport("TEST_DLL", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial void TestMethod(in int a, in FullyGenerated.TestHandle.Owns handle);
+    [LibraryImport("TEST_DLL")]
+    private static partial void TestMethod(FullyGenerated.TestHandle.Owns handle);
+    [LibraryImport("TEST_DLL")]
+    private static partial void TestMethodIn(in FullyGenerated.TestHandle.Owns handle);
+    [LibraryImport("TEST_DLL")]
+    private static partial void TestMethodOut(out FullyGenerated.TestHandle.Owns handle);
+    [LibraryImport("TEST_DLL")]
+    private static partial void TestMethodRef(ref FullyGenerated.TestHandle.Owns handle);
 #else
     [DllImport("TEST_DLL")]
-    private static extern void TestMethod(in int a, in FullyGenerated.TestHandle.Owns handle);
+    private static extern void TestMethod(FullyGenerated.TestHandle.Owns handle);
+    [DllImport("TEST_DLL")]
+    private static extern void TestMethodIn(in FullyGenerated.TestHandle.Owns handle);
+    [DllImport("TEST_DLL")]
+    private static extern void TestMethodOut(out FullyGenerated.TestHandle.Owns handle);
+    [DllImport("TEST_DLL")]
+    private static extern void TestMethodRef(ref FullyGenerated.TestHandle.Owns handle);
 #endif
 
     [CbsgWrapperMethod()]
-    public static partial void TestMethod(in int a, in FullyGenerated.TestWrapper? handle);
+    public static partial void TestMethod(FullyGenerated.TestWrapper? handle);
+    [CbsgWrapperMethod()]
+    public static partial void TestMethodIn(in FullyGenerated.TestWrapper? handle);
+    [CbsgWrapperMethod()]
+    public static partial void TestMethodOut(out FullyGenerated.TestWrapper? handle);
+    [CbsgWrapperMethod()]
+    public static partial void TestMethodRef(ref FullyGenerated.TestWrapper? handle);
+    
 }

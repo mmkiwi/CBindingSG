@@ -1,0 +1,54 @@
+{
+  Diagnostics: [
+    {
+      Id: CBSG0007,
+      Title: Partial match,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (16,4)-(17,88),
+      MessageFormat: Skipping match for method {0}. Method {1} has an incompatible return type.,
+      Message: Skipping match for method TestMethod(int,string,FullyGenerated.TestWrapper). Method TestMethod(int,string,FullyGenerated.TestHandle) has an incompatible return type.,
+      Category: CBindingSourceGenerator
+    },
+    {
+      Id: CBSG0003,
+      Title: Could not generate wrapper method,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (16,4)-(17,88),
+      MessageFormat: Could not generate wrapper method for {0}.,
+      Message: Could not generate wrapper method for TestMethod(int,string,FullyGenerated.TestWrapper).,
+      Category: CBindingSourceGenerator
+    },
+    {
+      Id: CBSG0007,
+      Title: Partial match,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (19,4)-(20,112),
+      MessageFormat: Skipping match for method {0}. Method {1} has an incompatible return type.,
+      Message: Skipping match for method TestMethod2(int,string,FullyGenerated.TestWrapper). Method TestMethod(int,string,FullyGenerated.TestHandle) has an incompatible return type.,
+      Category: CBindingSourceGenerator
+    },
+    {
+      Id: CBSG0005,
+      Title: Partial match,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (19,4)-(20,112),
+      MessageFormat: Skipping match for method {0}. Method {1} is missing the DllImport or LibraryImport attribute.,
+      Message: Skipping match for method TestMethod2(int,string,FullyGenerated.TestWrapper). Method TestMethod(int,string,FullyGenerated.TestWrapper) is missing the DllImport or LibraryImport attribute.,
+      Category: CBindingSourceGenerator
+    },
+    {
+      Id: CBSG0003,
+      Title: Could not generate wrapper method,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (19,4)-(20,112),
+      MessageFormat: Could not generate wrapper method for {0}.,
+      Message: Could not generate wrapper method for TestMethod2(int,string,FullyGenerated.TestWrapper).,
+      Category: CBindingSourceGenerator
+    }
+  ]
+}

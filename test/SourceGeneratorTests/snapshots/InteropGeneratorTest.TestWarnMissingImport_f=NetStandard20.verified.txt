@@ -1,0 +1,24 @@
+{
+  Diagnostics: [
+    {
+      Id: CBSG0005,
+      Title: Partial match,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (10,4)-(11,89),
+      MessageFormat: Skipping match for method {0}. Method {1} is missing the DllImport or LibraryImport attribute.,
+      Message: Skipping match for method TestMethod(int,string,FullyGenerated.TestWrapper). Method TestMethod(int,string,FullyGenerated.TestHandle) is missing the DllImport or LibraryImport attribute.,
+      Category: CBindingSourceGenerator
+    },
+    {
+      Id: CBSG0003,
+      Title: Could not generate wrapper method,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (10,4)-(11,89),
+      MessageFormat: Could not generate wrapper method for {0}.,
+      Message: Could not generate wrapper method for TestMethod(int,string,FullyGenerated.TestWrapper).,
+      Category: CBindingSourceGenerator
+    }
+  ]
+}

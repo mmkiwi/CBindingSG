@@ -6,8 +6,6 @@ using Basic.Reference.Assemblies;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-using MMKiwi.CBindingSG.SourceGenerator;
-
 using Xunit.Abstractions;
 
 namespace MMKiwi.CBindingSG.SourceGeneratorTests;
@@ -220,7 +218,7 @@ public class HandleGeneratorTest
             ],
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        var generator = new HandleGenerator();
+        var generator = new SourceGenerator.HandleGenerator();
 
         var driver = CSharpGeneratorDriver.Create([generator.AsSourceGenerator()], parseOptions: new CSharpParseOptions(preprocessorSymbols: f.ToPreprocessor()));
         return (driver.RunGenerators(compilation), compilation);

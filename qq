@@ -1,0 +1,61 @@
+[33mcommit cfa7912fd1ccbd35d0f8b5d88e4b6f1fa6202ed6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Micah Makaiwi <micah@mmkiwi.com>
+Date:   Wed Dec 27 23:17:22 2023 -0500
+
+    Added unit tests for Interop generator
+    
+    - Now checking for ArgumentNullException.ThrowIfNull and removing the
+      preprocessor directives
+    - Owns and DoesntOwn not implement IConstructableHandle to preevent errors
+      when using nullable wrappers
+
+[33mcommit c0490d9ce5da68e800023a67300228c820e94bf9[m
+Author: Micah Makaiwi <micah@mmkiwi.com>
+Date:   Tue Dec 26 22:28:15 2023 -0500
+
+    Switched to *.cs outputs for unit tests
+    
+    - Added filter to remove the pre-processing outputs
+
+[33mcommit 217526946cea057672a26518242dea821bbc8a65[m
+Author: Micah Makaiwi <micah@mmkiwi.com>
+Date:   Tue Dec 26 20:33:19 2023 -0500
+
+    Small update to driver method.
+    
+    - Syncing argument order
+
+[33mcommit 8c6dd0557c24e1369c80f4b76e73f7e11dba3c13[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Micah Makaiwi <micah@mmkiwi.com>
+Date:   Sat Dec 23 16:21:36 2023 -0500
+
+    Testing both .net standard and .net 7
+    
+    The main difference is support for static abstract in interfaces.
+
+[33mcommit b6387bdbda318a9557fbfb52a7b72665f734d063[m
+Author: Micah Makaiwi <micah@mmkiwi.com>
+Date:   Fri Dec 22 22:50:29 2023 -0500
+
+    Added unit tests for Wrapper generator
+
+[33mcommit e94250221a3511a19e03ea8088d2d9cfc26e0329[m
+Author: Micah Makaiwi <micah@mmkiwi.com>
+Date:   Fri Dec 22 20:54:37 2023 -0500
+
+    Fixed unit tests namespaces
+
+[33mcommit 1caa6e11ddcd8c16351550af4f832c71ce326187[m
+Author: Micah Makaiwi <micah@mmkiwi.com>
+Date:   Fri Dec 22 20:50:43 2023 -0500
+
+    Added Unit Tests for Handle SG
+    
+    - Fixed some bugs in the source generators
+    - Added sample project
+
+[33mcommit 35b657e3d8773d8a8eae05275c6b36694aa2950e[m
+Author: Micah Makaiwi <micah@mmkiwi.com>
+Date:   Thu Dec 21 21:20:46 2023 -0500
+
+    Initial commit

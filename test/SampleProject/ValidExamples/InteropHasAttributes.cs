@@ -10,13 +10,16 @@ public partial class InteropHasAttributes
 {
 #if NET7_0_OR_GREATER
     [LibraryImport("TEST_DLL", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial void TestMethod(FullyGenerated.TestHandle c);
+    private static partial void TestMethod(FullyGenerated.TestHandle c, int b);
     
 #else
     [DllImport("TEST_DLL")]
-    private static extern void TestMethod( FullyGenerated.TestHandle c);
+    private static extern void TestMethod( FullyGenerated.TestHandle c, int b);
 #endif
     
     [CbsgWrapperMethod]
-    public static partial int TestMethod([Description("test attribute")] FullyGenerated.TestWrapper c);
+    public static partial void TestMethod([Description("test attribute")] FullyGenerated.TestWrapper c, 
+        [Description("B"), Bindable(true)]
+        [Optional]
+        int b);
 }

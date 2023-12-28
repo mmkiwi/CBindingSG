@@ -3,6 +3,8 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using Microsoft.CodeAnalysis;
@@ -19,13 +21,6 @@ public class WrapperGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(ctx
-            =>
-        {
-            ctx.AddSource("IConstructableWrapper.g.cs", SourceResources.IConstructableWrapper);
-            ctx.AddSource("IHasHandle.g.cs", SourceResources.IHasHandle);
-        });
-
         // Do a simple filter for methods
         IncrementalValuesProvider<GenerationInfo> methodDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(
@@ -58,6 +53,8 @@ public class WrapperGenerator : IIncrementalGenerator
             };
         }
 
+        bool isConstructable = false;
+        
         AttributeData attribute = context.Attributes.First();
 
         MemberVisibility ctorVisibility = MemberVisibility.Private;
@@ -104,6 +101,7 @@ public class WrapperGenerator : IIncrementalGenerator
                 baseInterface.ConstructedFrom.ToDisplayString().StartsWith($"{Constants.IConstructableWrapperFullName}<"))
             {
                 handleType = baseInterface.TypeArguments[1];
+                isConstructable = true;
                 hasConstructMethod = FindConstructMethod(baseInterface, classSymbol, handleType);
             }
 
@@ -158,7 +156,7 @@ public class WrapperGenerator : IIncrementalGenerator
                 ClassSyntax = classSyntax
             };
         }
-
+        
         return new GenerationInfo.Ok
         {
             ClassSyntax = classSyntax,
@@ -167,8 +165,8 @@ public class WrapperGenerator : IIncrementalGenerator
             HandleType = handleType.ToDisplayString(),
             WrapperType = wrapperTypeStr,
             HasImplicitConstruct = hasConstructMethod.HasFlagFast(ConstructType.Implicit),
-            GenerateExplicitConstruct = !hasConstructMethod.HasFlagFast(ConstructType.Explicit) && staticVirtual,
-            GenerateImplicitConstruct = !hasConstructMethod.HasFlagFast(ConstructType.Implicit) && !staticVirtual,
+            GenerateExplicitConstruct = isConstructable && !hasConstructMethod.HasFlagFast(ConstructType.Explicit) && staticVirtual,
+            GenerateImplicitConstruct = isConstructable && !hasConstructMethod.HasFlagFast(ConstructType.Implicit) && !staticVirtual,
             NeedsExplicitHandle = !hasExplicitHandle,
             NeedsImplicitHandle = !hasImplicitHandle && handleVisibility != MemberVisibility.DoNotGenerate,
             HandleVisibility = handleVisibility.ToStringFast(),
@@ -304,15 +302,11 @@ public class WrapperGenerator : IIncrementalGenerator
             public required bool MissingIDisposable { get; init; }
         }
 
-        public override int GetHashCode()
-        {
-            return ClassSyntax.GetHashCode();
-        }
-
         public class ClassNameEqualityComparer : EqualityComparer<GenerationInfo>
         {
             public new static ClassNameEqualityComparer Default => new();
 
+            [ExcludeFromCodeCoverage]
             public override bool Equals(GenerationInfo x, GenerationInfo y) =>
                 x.ClassSyntax.ToFullDisplayName() == y.ClassSyntax.ToFullDisplayName();
 

@@ -113,6 +113,19 @@ public class WrapperGeneratorTests
         return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
     }
 
+    [Theory]
+    [ClassData(typeof(TargetFrameworks))]
+    public Task TestNotConstructable(TargetFramework f)
+    {
+        SyntaxTree source = Helpers.GetResource("WrapperNotConstructable", f);
+
+        var driver = GeneratorDriver(f, [
+            Helpers.Global, Helpers.TestError, Helpers.TestHandleBase(f), Helpers.SampleHandles, source
+        ]).OutputDiagnostics(output);
+
+        var runResult = driver.GetRunResult().Results.Single().Filter(Helpers.ExcludedResults);
+        return Verify(runResult).UseDirectory($"snapshots").UseParameters(f);
+    }
 
     [Theory]
     [ClassData(typeof(TargetFrameworks))]

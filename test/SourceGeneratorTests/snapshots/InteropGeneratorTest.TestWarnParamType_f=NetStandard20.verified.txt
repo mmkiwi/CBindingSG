@@ -1,0 +1,34 @@
+{
+  Diagnostics: [
+    {
+      Id: CBSG0006,
+      Title: Partial match,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (22,4)-(23,88),
+      MessageFormat: Skipping match for method {0}. Parameter {1} of method {2} cannot be matched.,
+      Message: Skipping match for method TestMethod(int,string,FullyGenerated.TestWrapper). Parameter b of method TestMethod(int,char,FullyGenerated.TestHandle) cannot be matched.,
+      Category: CBindingSourceGenerator
+    },
+    {
+      Id: CBSG0006,
+      Title: Partial match,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (22,4)-(23,88),
+      MessageFormat: Skipping match for method {0}. Parameter {1} of method {2} cannot be matched.,
+      Message: Skipping match for method TestMethod(int,string,FullyGenerated.TestWrapper). Parameter c of method TestMethod(int,string,FullyGenerated.TestHandleBase) cannot be matched.,
+      Category: CBindingSourceGenerator
+    },
+    {
+      Id: CBSG0003,
+      Title: Could not generate wrapper method,
+      Severity: Warning,
+      WarningLevel: 1,
+      Location: : (22,4)-(23,88),
+      MessageFormat: Could not generate wrapper method for {0}.,
+      Message: Could not generate wrapper method for TestMethod(int,string,FullyGenerated.TestWrapper).,
+      Category: CBindingSourceGenerator
+    }
+  ]
+}

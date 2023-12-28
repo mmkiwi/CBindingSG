@@ -6,14 +6,20 @@ namespace SampleProject.ValidExamples;
 
 public partial class InteropWarnParamType
 {
-#if NET7_0_OR_GREATER 
+#if NET7_0_OR_GREATER
     [LibraryImport("TEST_DLL", StringMarshalling = StringMarshalling.Utf16)]
     private static partial void TestMethod(int a, char b, FullyGenerated.TestHandle c);
+    
+    [LibraryImport("TEST_DLL", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial void TestMethod(int a, string b, FullyGenerated.TestHandleBase c);
 #else
     [DllImport("TEST_DLL")]
     private static extern void TestMethod(int a, char b, FullyGenerated.TestHandle c);
+
+    [DllImport("TEST_DLL")]
+    private static extern void TestMethod(int a, string b, FullyGenerated.TestHandleBase c);
 #endif
     
     [CbsgWrapperMethod]
-    public static partial void TestMethod(int a, string b, FullyGenerated.TestWrapper c);
+    public static partial int TestMethod(int a, string b, FullyGenerated.TestWrapper c);
 }

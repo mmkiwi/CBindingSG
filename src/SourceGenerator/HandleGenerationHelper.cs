@@ -93,22 +93,73 @@ public static class HandleGenerationHelper
             }
         }
 
-        if (genInfo.GenerateOwns)
+        switch (genInfo.GenerateOwns)
         {
-            resFile.AppendLine($$"""
-                                     
-                                     {{Constants.SgAttribute}}
-                                     public class Owns() : {{className}}(true);
-                                 """);
+            case true when genInfo.StaticVirtual:
+                resFile.AppendLine($$"""
+                                         
+                                         {{Constants.SgAttribute}}
+                                         public class Owns() : {{className}}(true), {{Constants.IConstructableHandleFullName}}<Owns>
+                                         {
+                                             static Owns {{Constants.IConstructableHandleFullName}}<Owns>.Construct(bool ownsHandle)
+                                             {
+                                                if(!ownsHandle)
+                                                    throw new InvalidOperationException("Cannot construct Owns that does not own handle");
+                                                return new();
+                                             }
+                                         }
+                                     """);
+                break;
+            case true when !genInfo.StaticVirtual:
+                resFile.AppendLine($$"""
+                                         
+                                         {{Constants.SgAttribute}}
+                                         public class Owns() : {{className}}(true), {{Constants.IConstructableHandleFullName}}<Owns>
+                                         {
+                                             internal static Owns Construct(bool ownsHandle)
+                                             {
+                                                if(!ownsHandle)
+                                                    throw new InvalidOperationException("Cannot construct Owns that does not own handle");
+                                                return new();
+                                             }
+                                         }
+                                     """);
+                break;
         }
 
-        if (genInfo.GenerateDoesntOwn)
+
+        switch (genInfo.GenerateDoesntOwn)
         {
-            resFile.AppendLine($$"""
-                                     
-                                     {{Constants.SgAttribute}}
-                                     public class DoesntOwn() : {{className}}(false);
-                                 """);
+            case true when genInfo.StaticVirtual:
+                resFile.AppendLine($$"""
+                                         
+                                         {{Constants.SgAttribute}}
+                                         public class DoesntOwn() : {{className}}(false), {{Constants.IConstructableHandleFullName}}<DoesntOwn>
+                                         {
+                                             static DoesntOwn {{Constants.IConstructableHandleFullName}}<DoesntOwn>.Construct(bool ownsHandle)
+                                             {
+                                                if(ownsHandle)
+                                                    throw new InvalidOperationException("Cannot construct DoesntOwn that owns handle");
+                                                return new();
+                                             }
+                                         }
+                                     """);
+                break;
+            case true when !genInfo.StaticVirtual:
+                resFile.AppendLine($$"""
+                                         
+                                         {{Constants.SgAttribute}}
+                                         public class DoesntOwn() : {{className}}(false), {{Constants.IConstructableHandleFullName}}<DoesntOwn>
+                                         {
+                                             internal static DoesntOwn Construct(bool ownsHandle)
+                                             {
+                                                if(ownsHandle)
+                                                    throw new InvalidOperationException("Cannot construct DoesntOwn that owns handle");
+                                                return new();
+                                             }
+                                         }
+                                     """);
+                break;
         }
 
         if (genInfo.GenerateConstructor)

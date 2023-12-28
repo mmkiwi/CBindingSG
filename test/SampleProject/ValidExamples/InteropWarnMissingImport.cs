@@ -6,8 +6,8 @@ namespace SampleProject.ValidExamples;
 
 public partial class InteropWarnMissingImport
 {
-    private static partial void TestMethod(int a, string b);
-    
+    private static void TestMethod(int a, string b, FullyGenerated.TestHandle c) { }
+
     [CbsgWrapperMethod]
     public static partial void TestMethod(int a, string b, FullyGenerated.TestWrapper c);
 }

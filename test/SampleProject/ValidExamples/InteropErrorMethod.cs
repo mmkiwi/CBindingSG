@@ -4,6 +4,7 @@
 
 namespace SampleProject.ValidExamples;
 
+[CbsgErrorMethod(typeof(Error), nameof(Error.ThrowIfError))]
 public partial class InteropErrorMethod
 {
 #if NET7_0_OR_GREATER 
@@ -16,4 +17,21 @@ public partial class InteropErrorMethod
 
     [CbsgWrapperMethod(MethodName = nameof(_TestMethod))]
     public static partial FullyGenerated.TestWrapper TestMethod();
+    
+    [CbsgWrapperMethod(MethodName = nameof(_TestMethod))]
+    [CbsgErrorMethod(typeof(Error), nameof(Error.ThrowIfError2))]
+    public static partial FullyGenerated.TestWrapper TestMethod2();
+
+    private static class Error
+    {
+        public static void ThrowIfError()
+        {
+            throw new Exception();
+        }
+        
+        public static void ThrowIfError2()
+        {
+            
+        }
+    }
 }

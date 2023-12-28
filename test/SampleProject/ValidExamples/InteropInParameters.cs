@@ -8,10 +8,10 @@ public partial class InteropInParameters
 {
 #if NET7_0_OR_GREATER 
     [LibraryImport("TEST_DLL", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial void TestMethod(in int a, in FullyGenerated.TestHandle handle);
+    private static partial void TestMethod(in int a, in FullyGenerated.TestHandle.Owns handle);
 #else
     [DllImport("TEST_DLL")]
-    private static extern void TestMethod(in int a, in FullyGenerated.TestHandle handle);
+    private static extern void TestMethod(in int a, in FullyGenerated.TestHandle.Owns handle);
 #endif
 
     [CbsgWrapperMethod()]
