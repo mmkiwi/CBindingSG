@@ -5,4 +5,4 @@ and wrapper methods around P/Invoke calls (by DllImport or LibraryImport).
 
 ## Documentation
 
-TODO
+TODO. Both the MMKiwi.CBindingSG.Core and MMKiwi.CBindingSG packages must be added.

@@ -1,80 +1,82 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <LangVersion>12.0</LangVersion>
-    <IsRoslynComponent>true</IsRoslynComponent>
-    <RootNamespace>MMKiwi.CBindingSG.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <AssemblyName>MMKiwi.CBindingSG.$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
-    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <AssemblyVersion>0.0.9</AssemblyVersion>
-    <FileVersion>$(AssemblyVersion)</FileVersion>
-    <NeutralLanguage>en-US</NeutralLanguage>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all"/>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all"/>
-    <PackageReference Include="PolySharp" Version="1.14.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <PropertyGroup>
-    <PackageId>MMKiwi.CBindingSG</PackageId>
-    <Version>$(AssemblyVersion)</Version>
-    <Authors>Micah Makaiwi</Authors>
-    <Title>C Binding Wrapper Source Generator</Title>
-    <Description>A source generator that builders wrappers around SafeHandle for P/Invoke.</Description>
-    <PackageProjectUrl>https://github.com/mmkiwi/CBindingSG</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/mmkiwi/CBindingSG</RepositoryUrl>
-    <License>MPL-2.0</License>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-
-    <!-- Pack the attributes dll in the analyzers/dotnet/cs path -->
-    <None Include="$(OutputPath)\MMKiwi.CBindingSG.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-
-    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" GeneratePathProperty="true" PrivateAssets="all"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="NetEscapades.EnumGenerators" Version="1.0.0-beta08" ReferenceOutputAssembly="false">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="SourceGenResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>TestResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="SourceGenResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>SourceGenResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <PropertyGroup>
-    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
-  </PropertyGroup>
-
-  <Target Name="GetDependencyTargetPaths">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>12.0</LangVersion>
+        <IsRoslynComponent>true</IsRoslynComponent>
+        <RootNamespace>MMKiwi.CBindingSG.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+        <AssemblyName>MMKiwi.CBindingSG.$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <AssemblyVersion>0.1.0</AssemblyVersion>
+        <FileVersion>$(AssemblyVersion)</FileVersion>
+        <NeutralLanguage>en-US</NeutralLanguage>
+    </PropertyGroup>
     <ItemGroup>
-      <TargetPathWithTargetPlatformMoniker Include="..\..\artifacts\bin\Core\$(Configuration)_netstandard2.0\*.dll" IncludeRuntimeDependency="false"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all"/>
+        <PackageReference Include="PolySharp" Version="1.14.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
-  </Target>
+
+    <PropertyGroup>
+        <PackageId>MMKiwi.CBindingSG</PackageId>
+        <Version>$(AssemblyVersion)</Version>
+        <Authors>Micah Makaiwi</Authors>
+        <Title>C Binding Wrapper Source Generator</Title>
+        <Description>A source generator that builders wrappers around SafeHandle for P/Invoke.</Description>
+        <PackageProjectUrl>https://github.com/mmkiwi/CBindingSG</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mmkiwi/CBindingSG</RepositoryUrl>
+        <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
+        <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+
+        <!-- Pack the attributes dll in the analyzers/dotnet/cs path -->
+        <None Include="$(OutputPath)\MMKiwi.CBindingSG.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+
+        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Core\Core.csproj" GeneratePathProperty="true" PrivateAssets="all"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NetEscapades.EnumGenerators" Version="1.0.0-beta08" ReferenceOutputAssembly="false">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="SourceGenResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>TestResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="SourceGenResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>SourceGenResources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    </PropertyGroup>
+
+    <Target Name="GetDependencyTargetPaths">
+        <ItemGroup>
+            <TargetPathWithTargetPlatformMoniker Include="..\..\artifacts\bin\Core\$(Configuration)_netstandard2.0\*.dll" IncludeRuntimeDependency="false"/>
+        </ItemGroup>
+    </Target>
 </Project>
