@@ -11,25 +11,25 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 internal static class Constants
 {
     public const string SgAttribute = """
-                                      [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+                                      [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
                                       """;
 
-    public const string Namespace = $"{nameof(MMKiwi)}.{nameof(CBindingSG)}";
+    public const string Namespace = $"MMKiwi.CBindingSG";
     
-    public const string WrapperMarkerClass = nameof(CbsgWrapperMethodAttribute);
+    public const string WrapperMarkerClass = "CbsgWrapperMethodAttribute";
     public const string ConstructHelperClass = "CbsgConstructionHelper";
     public const string WrapperMarkerFullName = $"{Namespace}.{WrapperMarkerClass}";
     
-    public const string HandleMarkerClass = $"{nameof(CbsgGenerateHandleAttribute)}";
+    public const string HandleMarkerClass = "CbsgGenerateHandleAttribute";
     public const string HandleMarkerFullName = $"{Namespace}.{HandleMarkerClass}";
 
-    public const string ErrorMarkerClass = nameof(CbsgErrorMethodAttribute);
+    public const string ErrorMarkerClass = "CbsgErrorMethodAttribute";
     public const string ErrorMarkerFullName = $"{Namespace}.{ErrorMarkerClass}";
     
-    public const string GenWrapperMarkerClass = nameof(CbsgGenerateWrapperAttribute);
+    public const string GenWrapperMarkerClass = "CbsgGenerateWrapperAttribute";
     public const string GenWrapperMarkerFullName = $"{Namespace}.{GenWrapperMarkerClass}";
     
-    public const string NeverOwnsMarkerClass = nameof(CbsgNeverOwnsAttribute);
+    public const string NeverOwnsMarkerClass = "CbsgNeverOwnsAttribute";
     public const string NeverOwnsMarkerFullName = $"{Namespace}.{NeverOwnsMarkerClass}";
 
     public const string IHasHandle = "IHasHandle";

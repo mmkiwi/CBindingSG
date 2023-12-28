@@ -6,10 +6,19 @@ using System.ComponentModel;
 
 using NetEscapades.EnumGenerators;
 
+#if CBSG_SOURCEGEN
+namespace MMKiwi.CBindingSG.SourceGenerator;
+#else 
 namespace MMKiwi.CBindingSG;
+#endif
 
 [EnumExtensions]
-public enum MemberVisibility
+#if CBSG_SOURCEGEN
+internal
+#else 
+public
+#endif
+enum MemberVisibility
 {
     [Description("public")] Public,
     [Description("protected")] Protected,

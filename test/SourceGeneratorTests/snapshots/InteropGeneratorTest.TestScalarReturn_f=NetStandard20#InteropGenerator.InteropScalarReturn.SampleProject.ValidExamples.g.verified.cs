@@ -1,9 +1,9 @@
-//HintName: InteropGenerator.InteropScalarReturn.SampleProject.ValidExamples.g.cs
+﻿//HintName: InteropGenerator.InteropScalarReturn.SampleProject.ValidExamples.g.cs
 #nullable enable
 namespace SampleProject.ValidExamples {
 public partial class InteropScalarReturn
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public static partial int TestMethod()
     {
         int __return_value;

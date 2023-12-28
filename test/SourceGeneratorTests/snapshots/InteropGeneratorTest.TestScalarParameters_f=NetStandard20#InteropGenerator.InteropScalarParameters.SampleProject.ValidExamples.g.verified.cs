@@ -1,9 +1,9 @@
-//HintName: InteropGenerator.InteropScalarParameters.SampleProject.ValidExamples.g.cs
+﻿//HintName: InteropGenerator.InteropScalarParameters.SampleProject.ValidExamples.g.cs
 #nullable enable
 namespace SampleProject.ValidExamples {
 public partial class InteropScalarParameters
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public static partial void TestMethod(int a, string b, byte c)
     {
          _TestMethod(a, b, c);

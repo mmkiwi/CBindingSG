@@ -8,8 +8,9 @@
         <RootNamespace>MMKiwi.CBindingSG.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
         <AssemblyName>MMKiwi.CBindingSG.$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-        <AssemblyVersion>0.1.0</AssemblyVersion>
+        <AssemblyVersion>0.1.1</AssemblyVersion>
         <FileVersion>$(AssemblyVersion)</FileVersion>
+        <DefineConstants>CBSG_SOURCEGEN</DefineConstants>
         <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
     <ItemGroup>
@@ -38,15 +39,7 @@
     <ItemGroup>
         <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
         <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-
-        <!-- Pack the attributes dll in the analyzers/dotnet/cs path -->
-        <None Include="$(OutputPath)\MMKiwi.CBindingSG.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-
         <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Core\Core.csproj" GeneratePathProperty="true" PrivateAssets="all"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -69,14 +62,8 @@
             <DependentUpon>SourceGenResources.resx</DependentUpon>
         </Compile>
     </ItemGroup>
-
-    <PropertyGroup>
-        <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
-    </PropertyGroup>
-
-    <Target Name="GetDependencyTargetPaths">
-        <ItemGroup>
-            <TargetPathWithTargetPlatformMoniker Include="..\..\artifacts\bin\Core\$(Configuration)_netstandard2.0\*.dll" IncludeRuntimeDependency="false"/>
-        </ItemGroup>
-    </Target>
+    
+    <ItemGroup>
+        <Compile Include="../Core/MemberVisibility.cs" />
+    </ItemGroup>
 </Project>

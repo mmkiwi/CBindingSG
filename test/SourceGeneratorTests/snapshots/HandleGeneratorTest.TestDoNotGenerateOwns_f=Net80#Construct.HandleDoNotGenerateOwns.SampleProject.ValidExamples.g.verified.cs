@@ -1,11 +1,11 @@
-//HintName: Construct.HandleDoNotGenerateOwns.SampleProject.ValidExamples.g.cs
+﻿//HintName: Construct.HandleDoNotGenerateOwns.SampleProject.ValidExamples.g.cs
 #nullable enable
 namespace SampleProject.ValidExamples {
 
 public abstract partial class HandleDoNotGenerateOwns
 {
     
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public class DoesntOwn() : HandleDoNotGenerateOwns(false), MMKiwi.CBindingSG.IConstructableHandle<DoesntOwn>
     {
         static DoesntOwn MMKiwi.CBindingSG.IConstructableHandle<DoesntOwn>.Construct(bool ownsHandle)
@@ -16,7 +16,7 @@ public abstract partial class HandleDoNotGenerateOwns
         }
     }
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     protected HandleDoNotGenerateOwns(bool ownsHandle): base(ownsHandle) { }
 }
 }

@@ -1,9 +1,9 @@
-//HintName: InteropGenerator.InteropErrorMethod.SampleProject.ValidExamples.g.cs
+﻿//HintName: InteropGenerator.InteropErrorMethod.SampleProject.ValidExamples.g.cs
 #nullable enable
 namespace SampleProject.ValidExamples {
 public partial class InteropErrorMethod
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public static partial FullyGenerated.TestWrapper TestMethod()
     {
         FullyGenerated.TestWrapper __return_value = null!;
@@ -14,7 +14,7 @@ public partial class InteropErrorMethod
         return __return_value;
 
     }
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public static partial FullyGenerated.TestWrapper TestMethod2()
     {
         FullyGenerated.TestWrapper __return_value = null!;

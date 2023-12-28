@@ -6,19 +6,19 @@ namespace SampleProject.FullyGenerated;
 
 public class TestWrapper: IConstructableWrapper<TestWrapper, TestHandle>, IHasHandle<TestHandle>
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
 #if NET7_0_OR_GREATER
     static TestWrapper IConstructableWrapper<TestWrapper, TestHandle>.Construct(TestHandle handle) => new(handle);
 #else
     public static TestWrapper Construct(TestHandle handle) => new(handle);
 #endif
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     private TestWrapper(TestHandle handle) => Handle = handle;
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     internal TestHandle Handle { get; }
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     TestHandle IHasHandle<TestHandle>.Handle => Handle;
 }

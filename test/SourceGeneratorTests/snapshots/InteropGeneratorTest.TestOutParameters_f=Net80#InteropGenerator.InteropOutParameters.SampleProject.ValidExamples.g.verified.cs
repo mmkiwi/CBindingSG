@@ -1,9 +1,9 @@
-//HintName: InteropGenerator.InteropOutParameters.SampleProject.ValidExamples.g.cs
+﻿//HintName: InteropGenerator.InteropOutParameters.SampleProject.ValidExamples.g.cs
 #nullable enable
 namespace SampleProject.ValidExamples {
 public partial class InteropOutParameters
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public static partial void TestMethod(out int a, out FullyGenerated.TestWrapper handle)
     {
         FullyGenerated.TestHandle.Owns __out_handle_raw;

@@ -65,14 +65,14 @@ public class WrapperGenerator : IIncrementalGenerator
         {
             switch (namedArgument.Key)
             {
-                case nameof(CbsgGenerateWrapperAttribute.ConstructorVisibility)
+                case "ConstructorVisibility"
                     when namedArgument.Value.Value is int cv:
                     ctorVisibility = (MemberVisibility)cv;
                     break;
-                case nameof(CbsgGenerateWrapperAttribute.HandleVisibility) when namedArgument.Value.Value is int hv:
+                case "HandleVisibility" when namedArgument.Value.Value is int hv:
                     handleVisibility = (MemberVisibility)hv;
                     break;
-                case nameof(CbsgGenerateWrapperAttribute.HandleSetVisibility) when namedArgument.Value.Value is int mh:
+                case "HandleSetVisibility" when namedArgument.Value.Value is int mh:
                     handleSetVisibility = (MemberVisibility)mh;
                     break;
             }

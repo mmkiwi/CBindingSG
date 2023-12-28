@@ -1,4 +1,4 @@
-//HintName: Construct.HandleHasExtraneousConstructor.HandleHasExtraneousConstructorBase.SampleProject.ValidExamples.g.cs
+﻿//HintName: Construct.HandleHasExtraneousConstructor.HandleHasExtraneousConstructorBase.SampleProject.ValidExamples.g.cs
 #nullable enable
 namespace SampleProject.ValidExamples {
 
@@ -8,7 +8,7 @@ public abstract partial class HandleHasExtraneousConstructorBase
 public abstract partial class HandleHasExtraneousConstructor
 {
     
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public class Owns() : HandleHasExtraneousConstructor(true), MMKiwi.CBindingSG.IConstructableHandle<Owns>
     {
         internal static Owns Construct(bool ownsHandle)
@@ -19,7 +19,7 @@ public abstract partial class HandleHasExtraneousConstructor
         }
     }
     
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public class DoesntOwn() : HandleHasExtraneousConstructor(false), MMKiwi.CBindingSG.IConstructableHandle<DoesntOwn>
     {
         internal static DoesntOwn Construct(bool ownsHandle)

@@ -70,13 +70,13 @@ public class HandleGenerator : IIncrementalGenerator
         {
             switch (namedArgument)
             {
-                case { Key: nameof(CbsgGenerateHandleAttribute.ConstructorVisibility), Value.Value: int cv }:
+                case { Key: "ConstructorVisibility", Value.Value: int cv }:
                     constructorVisibility = (MemberVisibility)cv;
                     break;
-                case { Key: nameof(CbsgGenerateHandleAttribute.GenerateOwns), Value.Value: bool bv }:
+                case { Key: "GenerateOwns", Value.Value: bool bv }:
                     generateOwns = bv;
                     break;
-                case { Key: nameof(CbsgGenerateHandleAttribute.GenerateDoesntOwn), Value.Value: bool bv }:
+                case { Key: "GenerateDoesntOwn", Value.Value: bool bv }:
                     generateDoesntOwn = bv;
                     break;
             }

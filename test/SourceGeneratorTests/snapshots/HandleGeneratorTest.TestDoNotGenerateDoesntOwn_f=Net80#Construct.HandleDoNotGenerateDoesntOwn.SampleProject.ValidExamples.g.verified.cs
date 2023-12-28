@@ -5,7 +5,7 @@ namespace SampleProject.ValidExamples {
 public abstract partial class HandleDoNotGenerateDoesntOwn
 {
     
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public class Owns() : HandleDoNotGenerateDoesntOwn(true), MMKiwi.CBindingSG.IConstructableHandle<Owns>
     {
         static Owns MMKiwi.CBindingSG.IConstructableHandle<Owns>.Construct(bool ownsHandle)
@@ -16,7 +16,7 @@ public abstract partial class HandleDoNotGenerateDoesntOwn
         }
     }
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     protected HandleDoNotGenerateDoesntOwn(bool ownsHandle): base(ownsHandle) { }
 }
 }

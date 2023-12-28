@@ -1,4 +1,4 @@
-//HintName: Construct.HandleNotSealedOrAbstract.SampleProject.ValidExamples.g.cs
+﻿//HintName: Construct.HandleNotSealedOrAbstract.SampleProject.ValidExamples.g.cs
 using SampleProject.FullyGenerated;
 #nullable enable
 namespace SampleProject.ValidExamples {
@@ -6,10 +6,10 @@ namespace SampleProject.ValidExamples {
 internal partial class HandleNotSealedOrAbstract
 {
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public static HandleNotSealedOrAbstract Construct(bool ownsHandle) => ownsHandle ? new Owns() : new DoesntOwn();
     
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public class Owns() : HandleNotSealedOrAbstract(true), MMKiwi.CBindingSG.IConstructableHandle<Owns>
     {
         internal static Owns Construct(bool ownsHandle)
@@ -20,7 +20,7 @@ internal partial class HandleNotSealedOrAbstract
         }
     }
     
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public class DoesntOwn() : HandleNotSealedOrAbstract(false), MMKiwi.CBindingSG.IConstructableHandle<DoesntOwn>
     {
         internal static DoesntOwn Construct(bool ownsHandle)
@@ -31,7 +31,7 @@ internal partial class HandleNotSealedOrAbstract
         }
     }
 
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     protected HandleNotSealedOrAbstract(bool ownsHandle): base(ownsHandle) { }
 }
 }

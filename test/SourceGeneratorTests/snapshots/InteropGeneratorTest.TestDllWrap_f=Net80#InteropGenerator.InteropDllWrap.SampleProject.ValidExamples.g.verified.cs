@@ -1,9 +1,9 @@
-//HintName: InteropGenerator.InteropDllWrap.SampleProject.ValidExamples.g.cs
+﻿//HintName: InteropGenerator.InteropDllWrap.SampleProject.ValidExamples.g.cs
 #nullable enable
 namespace SampleProject.ValidExamples {
 public partial class InteropDllWrap
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.000")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MMKiwi.CBindingSG.SourceGenerator", "0.0.1.100")]
     public static partial void TestMethod(FullyGenerated.TestWrapper wrapper)
     {
         ArgumentNullException.ThrowIfNull(wrapper);

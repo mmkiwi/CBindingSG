@@ -9,7 +9,7 @@
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
         <LangVersion>12</LangVersion>
-        <AssemblyVersion>0.1.0</AssemblyVersion>
+        <AssemblyVersion>0.1.1</AssemblyVersion>
         <FileVersion>$(AssemblyVersion)</FileVersion>
         <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
