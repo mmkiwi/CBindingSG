@@ -12,6 +12,7 @@
         <FileVersion>$(AssemblyVersion)</FileVersion>
         <DefineConstants>CBSG_SOURCEGEN</DefineConstants>
         <NeutralLanguage>en-US</NeutralLanguage>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all"/>

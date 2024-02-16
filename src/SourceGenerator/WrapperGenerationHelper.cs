@@ -11,7 +11,7 @@ namespace MMKiwi.CBindingSG.SourceGenerator;
 
 public static class WrapperGenerationHelper
 {
-    internal static string GenerateExtensionClass(WrapperGenerator.GenerationInfo.Ok genInfo, bool virtualStatic)
+    internal static string GenerateExtensionClass(WrapperGenerator.GenerationInfo.Ok genInfo)
     {
         StringBuilder resFile = new();
 

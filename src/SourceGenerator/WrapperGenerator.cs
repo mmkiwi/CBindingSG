@@ -3,7 +3,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -29,12 +28,12 @@ public class WrapperGenerator : IIncrementalGenerator
                 transform: GetMethodsToGenerate);// sect the methods with the [CbsgWrapperMethod] attribute
 
         // Combine the selected methods with the `Compilation`
-        IncrementalValueProvider<(Compilation, ImmutableArray<GenerationInfo>)> compilationAndMethods
-            = context.CompilationProvider.Combine(methodDeclarations.Collect());
+        IncrementalValueProvider<ImmutableArray<GenerationInfo>> compilationAndMethods
+            = methodDeclarations.Collect();
 
         // Generate the source using the compilation and methods
         context.RegisterSourceOutput(compilationAndMethods,
-            static (spc, source) => Execute(source.Item1, source.Item2, spc));
+            static (spc, source) => Execute(source, spc));
     }
 
     static GenerationInfo GetMethodsToGenerate(GeneratorAttributeSyntaxContext context, CancellationToken ct)
@@ -42,8 +41,6 @@ public class WrapperGenerator : IIncrementalGenerator
         // we know the node is a MethodDeclarationSyntax thanks to IsSyntaxTargetForGeneration
         ClassDeclarationSyntax classSyntax = (ClassDeclarationSyntax)context.TargetNode;
         INamedTypeSymbol classSymbol = (INamedTypeSymbol)context.TargetSymbol;
-
-        bool staticVirtual = context.SemanticModel.Compilation.SupportsRuntimeCapability(RuntimeCapability.VirtualStaticsInInterfaces);
 
         if (!classSyntax.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)))
         {
@@ -157,6 +154,8 @@ public class WrapperGenerator : IIncrementalGenerator
             };
         }
         
+        bool staticVirtual = context.SemanticModel.Compilation.SupportsRuntimeCapability(RuntimeCapability.VirtualStaticsInInterfaces);
+        
         return new GenerationInfo.Ok
         {
             ClassSyntax = classSyntax,
@@ -171,7 +170,8 @@ public class WrapperGenerator : IIncrementalGenerator
             NeedsImplicitHandle = !hasImplicitHandle && handleVisibility != MemberVisibility.DoNotGenerate,
             HandleVisibility = handleVisibility.ToStringFast(),
             HandleSetVisibility = handleSetVisibility.ToStringFast(),
-            MissingIDisposable = !neverOwns && !hasIDisposable
+            MissingIDisposable = !neverOwns && !hasIDisposable,
+            SupportsVirtualStatic = staticVirtual
         };
 
         /*
@@ -221,8 +221,7 @@ public class WrapperGenerator : IIncrementalGenerator
         return result;
     }
 
-    static void Execute(Compilation compilation, ImmutableArray<GenerationInfo> classes,
-        SourceProductionContext context)
+    static void Execute(ImmutableArray<GenerationInfo> classes, SourceProductionContext context)
     {
         if (classes.IsDefaultOrEmpty)
         {
@@ -256,8 +255,7 @@ public class WrapperGenerator : IIncrementalGenerator
                     continue;
                 case GenerationInfo.Ok genInfo:
                     {
-                        bool virtualStatic = compilation.SupportsRuntimeCapability(RuntimeCapability.VirtualStaticsInInterfaces);
-                        ;
+                        
 
                         if (genInfo.MissingIDisposable)
                         {
@@ -267,7 +265,7 @@ public class WrapperGenerator : IIncrementalGenerator
                         }
 
                         // generate the source code and add it to the output
-                        string result = WrapperGenerationHelper.GenerateExtensionClass(genInfo, virtualStatic);
+                        string result = WrapperGenerationHelper.GenerateExtensionClass(genInfo);
                         context.AddSource($"Construct.{cls.ClassSyntax.ToFullDisplayName()}.g.cs",
                             SourceText.From(result, Encoding.UTF8));
                         break;
@@ -290,6 +288,8 @@ public class WrapperGenerator : IIncrementalGenerator
             public required string HandleType { get; init; }
             public required string ConstructorVisibility { get; init; }
             public required bool NeedsConstructor { get; init; }
+            
+            public required bool SupportsVirtualStatic { get; init; } 
 
             public required bool HasImplicitConstruct { get; init; }
             public required bool GenerateExplicitConstruct { get; init; }

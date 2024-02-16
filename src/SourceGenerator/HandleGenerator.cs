@@ -26,12 +26,10 @@ public class HandleGenerator : IIncrementalGenerator
                 transform: GetClasses);// sect the methods with the [CbsgWrapperMethod] attribute
 
         // Combine the selected methods with the `Compilation`
-        IncrementalValueProvider<(Compilation, ImmutableArray<GenerationInfo>)> compilationAndMethods
-            = context.CompilationProvider.Combine(methodDeclarations.Collect());
+        IncrementalValueProvider<ImmutableArray<GenerationInfo>> compilationAndMethods = methodDeclarations.Collect();
 
         // Generate the source using the compilation and methods
-        context.RegisterSourceOutput(compilationAndMethods,
-            static (spc, source) => Execute(source.Item1, source.Item2, spc));
+        context.RegisterSourceOutput(compilationAndMethods, static (spc, source) => Execute(source, spc));
     }
 
     static GenerationInfo GetClasses(GeneratorAttributeSyntaxContext context, CancellationToken ct)
@@ -43,7 +41,7 @@ public class HandleGenerator : IIncrementalGenerator
         AttributeData attribute = context.Attributes[0];
 
         bool staticVirtual = context.SemanticModel.Compilation.SupportsRuntimeCapability(RuntimeCapability.VirtualStaticsInInterfaces);
-        
+
         bool needsConstructMethod = false;
         bool hasConstructMethod = false;
         bool generateOwns = true;
@@ -58,10 +56,7 @@ public class HandleGenerator : IIncrementalGenerator
         if (!isPartial)
         {
             //If the method is not partial, skip everything else and just report an error. 
-            return new GenerationInfo.ErrorNotPartial
-            {
-                ClassSymbol = classSyntax,
-            };
+            return new GenerationInfo.ErrorNotPartial(classSyntax);
         }
 
         MemberVisibility constructorVisibility = MemberVisibility.Protected;
@@ -84,13 +79,13 @@ public class HandleGenerator : IIncrementalGenerator
 
         BaseType baseFound = BaseType.NotFound;
 
-        List<string> parentClasses = [];
+        Stack<string> parentClasses = [];
 
         var parentClass = classSymbol.BaseType;
         while (parentClass != null)
         {
             string ds = parentClass.ToDisplayString();
-            parentClasses.Add(ds);
+            parentClasses.Push(ds);
             if (ds == "System.Runtime.InteropServices.SafeHandle")
             {
                 needsDoesntOwn = needsOwns = true;
@@ -103,9 +98,9 @@ public class HandleGenerator : IIncrementalGenerator
         }
 
         if (baseFound == BaseType.NotFound)
-            return new GenerationInfo.ErrorBadBase()
+            return new GenerationInfo.ErrorBadBase(classSyntax)
             {
-                ClassSymbol = classSyntax, ParentClass = parentClasses
+                ParentClass = new(parentClasses.ToArray())
             };
 
         if ((needsOwns && generateOwns) || (needsDoesntOwn && generateDoesntOwn))
@@ -144,9 +139,33 @@ public class HandleGenerator : IIncrementalGenerator
                 { Type.SpecialType: SpecialType.System_Boolean }
             ]);
 
-        return new GenerationInfo.Ok
+        Stack<GenerationInfo.ParentClassInfo> parentClassSyntaxes = [];
+        Stack<string> parentNamespaces = [];
+        List<string> usings = [];
+
+        SyntaxNode? parent = classSyntax;
+
+        while (parent is not null)
         {
-            ClassSymbol = classSyntax,
+            switch (parent)
+            {
+                case BaseNamespaceDeclarationSyntax ns:
+                    parentNamespaces.Push(ns.Name.ToString());
+                    break;
+                case TypeDeclarationSyntax cls:
+                    parentClassSyntaxes.Push(new(cls));
+                    break;
+                case CompilationUnitSyntax cus:
+                    foreach (var use in cus.Usings)
+                        usings.Add(use.ToString());
+                    break;
+            }
+
+            parent = parent.Parent;
+        }
+        
+        return new GenerationInfo.Ok(classSyntax)
+        {
             GenerateConstruct = needsConstructMethod && !hasConstructMethod,
             BaseHandleType = baseFound,
             StaticVirtual = staticVirtual,
@@ -156,7 +175,10 @@ public class HandleGenerator : IIncrementalGenerator
             ConstructorVisibility = constructorVisibility.ToStringFast(),
             IsSealedOrAbstract = classSymbol.IsAbstract || classSymbol.IsSealed,
             GenerateOwns = baseFound != BaseType.Parameterless && needsOwns && generateOwns && !hasOwns,
-            GenerateDoesntOwn = baseFound != BaseType.Parameterless && needsDoesntOwn && generateDoesntOwn && !hasDoesntOwn
+            GenerateDoesntOwn = baseFound != BaseType.Parameterless && needsDoesntOwn && generateDoesntOwn && !hasDoesntOwn,
+            Usings = new(usings.ToArray()),
+            ParentClasses = new(parentClassSyntaxes.ToArray()),
+            ParentNamespaces = new(parentNamespaces.ToArray())
         };
     }
     private static BaseType GetConstructorType(INamedTypeSymbol currClass, INamedTypeSymbol baseClass)
@@ -169,10 +191,10 @@ public class HandleGenerator : IIncrementalGenerator
         {
             return type;
         }
-        
+
         return BaseType.Unknown;
 
-        bool SearchConstructors(INamedTypeSymbol namedTypeSymbol, out BaseType type)
+        static bool SearchConstructors(INamedTypeSymbol namedTypeSymbol, out BaseType typeToSearch)
         {
 
             foreach (var constructor in namedTypeSymbol.Constructors)
@@ -180,26 +202,25 @@ public class HandleGenerator : IIncrementalGenerator
                 if (constructor.DeclaringSyntaxReferences.Length == 0)
                     // This is an autogenerated constructor, skip 
                     continue;
-            
+
                 switch (constructor.Parameters)
                 {
                     case []:
-                        type = BaseType.Parameterless;
+                        typeToSearch = BaseType.Parameterless;
                         return true;
                     case [{ Type.SpecialType: SpecialType.System_Boolean }]:
-                        type = BaseType.Bool;
+                        typeToSearch = BaseType.Bool;
                         return true;
                 }
             }
-            type = BaseType.Unknown; 
+            typeToSearch = BaseType.Unknown;
             return false;
         }
     }
 
-    
-    
-    static void Execute(Compilation compilation, ImmutableArray<GenerationInfo> classes,
-        SourceProductionContext context)
+
+
+    static void Execute(ImmutableArray<GenerationInfo> classes, SourceProductionContext context)
     {
         if (classes.IsDefaultOrEmpty)
         {
@@ -213,26 +234,26 @@ public class HandleGenerator : IIncrementalGenerator
             {
                 case GenerationInfo.ErrorBadBase ebb:
                     context.ReportDiagnostic(Diagnostic.Create(Constants.Diag11ImplementHandle,
-                        cls.ClassSymbol.GetLocation(),
-                        cls.ClassSymbol.Identifier, string.Join(", ", ebb.ParentClass)));
+                        cls.Location?.ToLocation(),
+                        cls.Identifier, string.Join(", ", ebb.ParentClass)));
                     break;
                 case GenerationInfo.ErrorNotPartial:
                     context.ReportDiagnostic(Diagnostic.Create(Constants.Diag02IsNotPartial,
-                        cls.ClassSymbol.GetLocation(),
-                        [cls.ClassSymbol.Identifier, "Class"]));
+                        cls.Location?.ToLocation(),
+                        [cls.Identifier, "Class"]));
                     break;
                 case GenerationInfo.Ok genInfo:
                     {
                         if (!genInfo.IsSealedOrAbstract)
                         {
                             context.ReportDiagnostic(Diagnostic.Create(Constants.Diag10SealAbstract,
-                                cls.ClassSymbol.GetLocation(),
-                                cls.ClassSymbol.Identifier));
+                                cls.Location?.ToLocation(),
+                                cls.Identifier));
                         }
 
                         // generate the source code and add it to the output
                         string result = HandleGenerationHelper.GenerateExtensionClass(genInfo);
-                        context.AddSource($"Construct.{cls.ClassSymbol.ToFullDisplayName()}.g.cs",
+                        context.AddSource($"Construct.{cls.FullDisplayName}.g.cs",
                             SourceText.From(result, Encoding.UTF8));
                         break;
                     }
@@ -240,15 +261,18 @@ public class HandleGenerator : IIncrementalGenerator
         }
     }
 
-    public abstract class GenerationInfo
+    internal abstract record GenerationInfo
     {
-        public required ClassDeclarationSyntax ClassSymbol { get; init; }
-
-        [ExcludeFromCodeCoverage]
-        public override int GetHashCode()
+        public GenerationInfo(ClassDeclarationSyntax syntax)
         {
-            return ClassSymbol.GetHashCode();
+            Identifier = syntax.Identifier.Text;
+            FullDisplayName = syntax.ToFullDisplayName();
+            Location = LocationInfo.CreateFrom(syntax.GetLocation());
         }
+        public string Identifier { get; }
+        public string FullDisplayName { get; }
+
+        public LocationInfo? Location { get; }
 
         public class ClassNameEqualityComparer : EqualityComparer<GenerationInfo>
         {
@@ -256,20 +280,28 @@ public class HandleGenerator : IIncrementalGenerator
 
             [ExcludeFromCodeCoverage]
             public override bool Equals(GenerationInfo x, GenerationInfo y) =>
-                x.ClassSymbol.ToFullDisplayName() == y.ClassSymbol.ToFullDisplayName();
+                x.FullDisplayName == y.FullDisplayName;
 
             [ExcludeFromCodeCoverage]
-            public override int GetHashCode(GenerationInfo obj) => obj.ClassSymbol.ToFullDisplayName().GetHashCode();
+            public override int GetHashCode(GenerationInfo obj) => obj.FullDisplayName.GetHashCode();
         }
 
-        public class ErrorNotPartial : GenerationInfo;
-
-        public class ErrorBadBase : GenerationInfo
+        public record ErrorNotPartial : GenerationInfo
         {
-            public required IEnumerable<string> ParentClass { get; init; }
+            public ErrorNotPartial(ClassDeclarationSyntax syntax) : base(syntax)
+            {
+            }
         }
 
-        public class Ok : GenerationInfo
+        public record ErrorBadBase : GenerationInfo
+        {
+            public required EquatableArray<string> ParentClass { get; init; }
+            public ErrorBadBase(ClassDeclarationSyntax syntax) : base(syntax)
+            {
+            }
+        }
+
+        public record Ok : GenerationInfo
         {
             public required bool GenerateConstructor { get; init; }
             public required bool GenerateConstruct { get; init; }
@@ -278,8 +310,22 @@ public class HandleGenerator : IIncrementalGenerator
             public required bool IsSealedOrAbstract { get; init; }
             public required bool GenerateOwns { get; init; }
             public required bool GenerateDoesntOwn { get; init; }
-            
+
+            public required EquatableArray<string> Usings { get; init; }
+            public required EquatableArray<string> ParentNamespaces { get; init; }
+            public required EquatableArray<ParentClassInfo> ParentClasses { get; init; }
             public required bool StaticVirtual { get; init; }
+            public Ok(ClassDeclarationSyntax syntax) : base(syntax)
+            {
+            }
+        }
+
+        public record struct ParentClassInfo(string Modifiers, string Keyword, string Identifier)
+        {
+            public ParentClassInfo(TypeDeclarationSyntax syntax) : this(syntax.Modifiers.ToString(), syntax.Keyword.ToString(), syntax.Identifier.Text)
+            {
+
+            }
         }
     }
 
